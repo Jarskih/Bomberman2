@@ -7,6 +7,9 @@
 struct SDL_Renderer;
 class Sound;
 class Map;
+class EasyEnemy;
+class Player;
+class PowerUp;
 
 class TEST_STATE_1 : public State
 {
@@ -16,7 +19,7 @@ class TEST_STATE_1 : public State
 	int m_timer;
 	sp<Block> tileSet[Config::MAX_BLOCKS_X][Config::MAX_BLOCKS_Y] = {};
 	std::vector<sp<Player>> m_playerList = {};
-	std::vector<sp<Enemy>> m_enemyList = {};
+	std::vector<sp<EasyEnemy>> m_enemyList = {};
 	std::vector<sp<PowerUp>> m_powerUps = {};
 	bool m_enemies_dead;
 	bool m_timeOut = false;

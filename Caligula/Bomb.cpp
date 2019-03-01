@@ -27,6 +27,7 @@ Bomb::~Bomb()
 
 void Bomb::render(SDL_Renderer* renderer)
 {
+	/*
 	const Uint32 currentTime = SDL_GetTicks() - timeDropped;
 	const Uint32 timeSpent = currentTime - oldTime;
 
@@ -58,6 +59,8 @@ void Bomb::render(SDL_Renderer* renderer)
 
 	//SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 	//SDL_RenderDrawRect(renderer, &collider);
+
+	*/
 }
 
 void Bomb::load_textures(SDL_Renderer* renderer, const std::string &sprite)
@@ -99,6 +102,7 @@ void Bomb::explode(SDL_Renderer* renderer)
 
 void Bomb::renderFlames(SDL_Renderer* renderer, int frames)
 {
+	/*
 	if (flames.empty())
 	{
 		// Middle flame
@@ -207,12 +211,13 @@ void Bomb::renderFlames(SDL_Renderer* renderer, int frames)
 		flame->checkCollision();
 		flame->render(frames);
 	}
+	*/
 }
 
 bool Bomb::canSpawnFlame(const sp<Map> &map, const int x, const int y)
 {
 	bool allowed = false;
-	switch (map->tileSet[x][y]->m_block_type) {
+	switch (map->tileSet[x][y]->GetBlockType()) {
 	case Config::GRASS:
 		allowed = true;
 		break;

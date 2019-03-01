@@ -1,19 +1,20 @@
 ﻿#include "Hud.h"
 #include "Service.h"
-#include "State.h"
+#include <SDL_ttf.h>
 
 class Player;
 
 Hud::Hud(SDL_Renderer * renderer)
 {
 	m_renderer = renderer;
-	auto textures = Service<Textures>::Get();
-	m_texture = textures->findTexture("hud");
+	//auto textures = Service<Textures>::Get();
+	//m_texture = textures->findTexture("hud");
 	loadFont();
 }
 
 bool Hud::loadFromRenderedText(std::string &textureText, SDL_Color textColor)
 {
+	/*
 	SDL_DestroyTexture(m_textTexture);
 	SDL_Surface* textSurface = TTF_RenderText_Solid(m_font, textureText.c_str(), textColor);
 	if (textSurface == nullptr)
@@ -36,10 +37,13 @@ bool Hud::loadFromRenderedText(std::string &textureText, SDL_Color textColor)
 		SDL_FreeSurface(textSurface);
 	}
 	return m_textTexture != nullptr;
+	*/
+	return false;
 }
 
 bool Hud::loadFont()
 {
+	/*
 	bool success = true;
 
 	m_font = TTF_OpenFont("font/8bit.ttf", 24);
@@ -49,17 +53,19 @@ bool Hud::loadFont()
 		success = false;
 	}
 	return success;
+	*/
+	return false;
 }
 
 void Hud::render(const sp<Timer>& timer)
 {
 	SDL_RenderCopy(m_renderer, m_texture, nullptr, &m_hudRect);
 
-	const auto state = Service<State>::Get();
+	//const auto state = Service<State>::Get();
 	m_sec = timer->getSeconds();
 	m_min = timer->getMinutes();
-	m_score = state->m_score;
-	m_lives = state->m_lives;
+	//m_score = state->m_score;
+	//m_lives = state->m_lives;
 
 	auto lives = std::to_string(m_lives);
 

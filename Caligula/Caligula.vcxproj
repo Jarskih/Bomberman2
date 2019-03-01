@@ -157,7 +157,6 @@
     <ClCompile Include="Pathfinding.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PowerUp.cpp" />
-    <ClCompile Include="TEST_BALL.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionHandler.cpp" />
     <ClCompile Include="FSM.cpp" />
@@ -168,9 +167,7 @@
     <ClCompile Include="SoundHandler.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteHandler.cpp" />
-    <ClCompile Include="TEST_PADDLE.cpp" />
     <ClCompile Include="TEST_STATE_1.cpp" />
-    <ClCompile Include="TEST_STATE_2.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -187,7 +184,6 @@
     <ClInclude Include="Pathfinding.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PowerUp.h" />
-    <ClInclude Include="TEST_BALL.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="CollisionHandler.h" />
     <ClInclude Include="Entity.h" />
@@ -195,7 +191,6 @@
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Mouse.h" />
-    <ClInclude Include="TEST_PADDLE.h" />
     <ClInclude Include="Service.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundHandler.h" />
@@ -203,7 +198,6 @@
     <ClInclude Include="SpriteHandler.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="TEST_STATE_1.h" />
-    <ClInclude Include="TEST_STATE_2.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

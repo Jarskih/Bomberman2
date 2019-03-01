@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <SDL.h>
 #include "Config.h"
-#include "Textures.h"
+//#include "Textures.h"
 #include "Service.h"
 #include <vector>
 #include "Block.h"
@@ -10,19 +10,7 @@ class Player;
 class PowerUp
 {
 public:
-	PowerUp(const int indexX, const int indexY, const int type, SDL_Renderer* renderer) : m_type(type), m_index_x(indexX), m_index_y(indexY), m_renderer(renderer)
-	{
-		const auto blockCenter = Helpers::GetBlockCenter(m_index_x, m_index_y);
-		m_collider.x = blockCenter.first;
-		m_collider.y = blockCenter.second;
-		m_pos_x = blockCenter.first;
-		m_pos_y = blockCenter.second;
-		m_window_rect.x = blockCenter.first;
-		m_window_rect.y = blockCenter.second;
-
-		m_texture = Service<Textures>::Get()->findTexture("powerUps");
-
-	};
+	PowerUp(const int indexX, const int indexY, const int type);
 	~PowerUp() = default;
 	void render();
 	void checkCollision(const std::vector<sp<Player>>& playerList);

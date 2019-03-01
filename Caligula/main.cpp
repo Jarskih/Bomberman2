@@ -3,7 +3,6 @@
 #pragma comment(lib, "../Dependencies/SDL2/lib/x64/SDL2main.lib")
 #pragma comment(lib, "../Dependencies/SDL2_mixer/lib/x64/SDL2_mixer.lib")
 #pragma comment(lib, "../Dependencies/SDL2_image/lib/x64/SDL2_image.lib")
-#pragma comment(lib, "../Dependencies/SDL2_ttf/lib/x64/SDL2_ttf.lib")
 
 #include <SDL.h>
 #include <SDL_mixer.h>
@@ -19,7 +18,6 @@
 
 #include "FSM.h"
 #include "TEST_STATE_1.h"
-#include "TEST_STATE_2.h"
 
 
 
@@ -59,9 +57,7 @@ int main(int ac, char** av)
 
 		FSM stateMachine;
 		TEST_STATE_1 stateOne(*renderer);
-		TEST_STATE_2 stateTwo(*renderer);
 		stateMachine.AddState(&stateOne);
-		stateMachine.AddState(&stateTwo);
 		stateMachine.SetState(&stateOne);
 
 		bool running = true;

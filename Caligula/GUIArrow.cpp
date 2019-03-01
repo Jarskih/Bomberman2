@@ -2,10 +2,12 @@
 #include "Config.h"
 #include "Helpers.h"
 
+/*
 GUIArrow::GUIArrow(sp<Textures> textures)
 {
 	m_texture = textures->findTexture("arrow");
 }
+*/
 
 
 GUIArrow::~GUIArrow()
@@ -35,6 +37,7 @@ int GUIArrow::getOffset() const
 
 void GUIArrow::update(sp<State> state)
 {
+	/*
 	if (state->m_scene == State::MENU)
 	{
 		m_max_position = 2;
@@ -47,7 +50,7 @@ void GUIArrow::update(sp<State> state)
 		int m_arrow_offset = 50;
 		m_window_rect = { Config::SCREEN_WIDTH / 4, (Config::SCREEN_HEIGHT / 26) * 10 + getOffset(), m_width, m_height };
 	}
-
+	*/
 }
 
 int GUIArrow::getPosition() const

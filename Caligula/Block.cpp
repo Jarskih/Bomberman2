@@ -69,7 +69,9 @@ void Block::Render(SDL_Renderer* p_renderer) {
 	}
 }
 
-void Update() {};
+void Block::Update()
+{
+}
 
 std::pair <int, int> Block::getBlockIndex() const
 {
@@ -84,6 +86,16 @@ int Block::fCost() const
 int Block::GetIndexX() const
 {
 	return m_index_x;
+}
+
+int Block::GetPositionX() const
+{
+	return m_x;
+}
+
+int Block::GetPositionY() const
+{
+	return m_y;
 }
 
 int Block::GetIndexY() const

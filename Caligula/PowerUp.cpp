@@ -3,6 +3,19 @@
 #include "Musicplayer.h"
 #include "State.h"
 
+PowerUp::PowerUp(const int indexX, const int indexY, const int type) : m_type(type), m_index_x(indexX), m_index_y(indexY)
+{
+	const auto blockCenter = Helpers::GetBlockCenter(m_index_x, m_index_y);
+	m_collider.x = blockCenter.first;
+	m_collider.y = blockCenter.second;
+	m_pos_x = blockCenter.first;
+	m_pos_y = blockCenter.second;
+	m_window_rect.x = blockCenter.first;
+	m_window_rect.y = blockCenter.second;
+
+	//m_texture = Service<Textures>::Get()->findTexture("powerUps");
+}
+
 void PowerUp::render()
 {
 	if (m_is_picked_up) {
@@ -40,6 +53,7 @@ void PowerUp::render()
 
 void PowerUp::checkCollision(const std::vector<sp<Player>>& m_playerList)
 {
+	/*
 	if (!m_is_picked_up) {
 		for (const auto& player : m_playerList)
 		{
@@ -86,4 +100,5 @@ void PowerUp::checkCollision(const std::vector<sp<Player>>& m_playerList)
 			}
 		}
 	}
+	*/
 }

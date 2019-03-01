@@ -16,8 +16,8 @@ namespace Pathfinding {
 				continue;
 			}
 
-			const auto checkX = block->m_index_x;
-			const auto checkY = block->m_index_y + y;
+			const auto checkX = block->GetIndexX();
+			const auto checkY = block->GetIndexY() + y;
 
 			if (checkY >= 0 && checkY < Config::MAX_BLOCKS_Y)
 			{
@@ -33,8 +33,8 @@ namespace Pathfinding {
 				continue;
 			}
 
-			const auto checkY = block->m_index_y;
-			const auto checkX = block->m_index_x + x;
+			const auto checkY = block->GetIndexY();
+			const auto checkX = block->GetIndexX() + x;
 
 			if (checkX >= 0 && checkX < Config::MAX_BLOCKS_X)
 			{
@@ -48,8 +48,8 @@ namespace Pathfinding {
 	// Find distance from current block to target
 	int getDistance(sp<Block> &target, sp<Block> &start)
 	{
-		const int distX = abs(target->m_index_x - start->m_index_x);
-		const int distY = abs(target->m_index_y - start->m_index_y);
+		const int distX = abs(target->GetIndexX() - start->GetIndexX());
+		const int distY = abs(target->GetIndexY() - start->GetIndexY());
 
 
 		if (distX > distY)

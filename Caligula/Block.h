@@ -23,6 +23,8 @@ public:
 	int m_h_cost;
 	int fCost() const;
 	int GetIndexX() const;
+	int GetPositionX() const;
+	int GetPositionY() const;
 	int GetIndexY() const;
 	int GetBlockType() const;
 	void SetParent(sp<Block> block);

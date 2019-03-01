@@ -11,17 +11,19 @@ class Block;
 class EasyEnemy : public Entity
 {
 public:
-	EasyEnemy(const EntityType enemy_type, SDL_Renderer* renderer, const int index_x, const int index_y);;
+	EasyEnemy(const EntityType enemy_type, const int index_x, const int index_y);;
 	void Update();
 	void Render(SDL_Renderer* p_renderer);
 	void smartMove();
 	void die();
 private:
-	SDL_Renderer* m_renderer;
 	sp<Block> m_next_block;
 	sp<Block> target_block;
 	sp<Block>current_block;
 
+
+	int m_speed_x;
+	int m_speed_y;
 	EntityType m_type;
 	int m_frame = 0;
 	int m_score = 100;

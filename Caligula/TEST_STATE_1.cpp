@@ -10,7 +10,7 @@
 
 TEST_STATE_1::TEST_STATE_1(SDL_Renderer& p_renderer) : m_renderer(&p_renderer)
 {
-	m_map = makesp<Map>();
+	m_map = makesp<Map>(1, m_enemyList);
 	m_bombSound = Service<SoundHandler>::Get()->CreateSound("../sounds/bomb.wav");
 	m_name = "GameState";
 }
@@ -81,24 +81,28 @@ void TEST_STATE_1::Exit()
 
 void TEST_STATE_1::checkWinCondition()
 {
+	/*
 	int deadEnemies = 0;
 	int totalEnemies = 0;
 	for (const auto& enemy : m_enemyList)
 	{
 		totalEnemies++;
+		/*
 		if (!enemy->isAlive())
 		{
 			deadEnemies++;
 		}
-	}
-	if (deadEnemies >= totalEnemies)
-	{
-		m_enemies_dead = true;
-	}
-	else
-	{
-		m_enemies_dead = false;
-	}
+
+}
+if (deadEnemies >= totalEnemies)
+{
+	m_enemies_dead = true;
+}
+else
+{
+	m_enemies_dead = false;
+}
+*/
 }
 
 void TEST_STATE_1::spawnEnemies(int number, int enemyType)
@@ -106,7 +110,7 @@ void TEST_STATE_1::spawnEnemies(int number, int enemyType)
 	for (auto numberOfEnemies = 0; numberOfEnemies < number; numberOfEnemies++)
 	{
 		const auto block = m_map->findRandomGrassBlock();
-		const auto enemyObject = makesp<Enemy>(HARD_ENEMY, m_renderer, block->m_index_x, block->m_index_y);
+		const auto enemyObject = makesp<EasyEnemy>(HARD_ENEMY, block->GetIndexX(), block->GetIndexY());
 		m_enemyList.push_back(enemyObject);
 	}
 }

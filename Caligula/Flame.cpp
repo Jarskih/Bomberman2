@@ -2,7 +2,7 @@
 #include "Flame.h"
 #include <SDL_image.h>
 #include "Service.h"
-#include "Textures.h"
+//#include "Textures.h"
 #include "Map.h"
 #include "Bomb.h"
 
@@ -23,8 +23,8 @@ void Flame::loadTextures(std::string sprite)
 {
 	if (!m_texture_loaded)
 	{
-		auto textures = Service<Textures>::Get();
-		m_texture = textures->findTexture(sprite);
+		//auto textures = Service<Textures>::Get();
+		//m_texture = textures->findTexture(sprite);
 		m_texture_loaded = true;
 	}
 }
@@ -47,11 +47,11 @@ void Flame::render(int frame)
 	}
 
 	// Debug
-	const auto state = Service<State>::Get();
-	if (state->m_debug) {
-		SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-		SDL_RenderDrawRect(m_renderer, &m_collider);
-	}
+	//const auto state = Service<State>::Get();
+	//if (state->m_debug) {
+	SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+	SDL_RenderDrawRect(m_renderer, &m_collider);
+	//}
 }
 
 void Flame::colliderResize(const int x, const int y, const int width, const int height)
@@ -64,6 +64,7 @@ void Flame::colliderResize(const int x, const int y, const int width, const int 
 
 void Flame::checkCollision() const
 {
+	/*
 	auto map = Service<Map>::Get();
 	for (const auto& player : map->m_playerList)
 	{
@@ -105,4 +106,5 @@ void Flame::checkCollision() const
 
 		}
 	}
+	*/
 }

@@ -99,17 +99,8 @@
     <ClCompile Include="TEST_STATE_1.cpp">
       <Filter>Source Files\Game\GameStates</Filter>
     </ClCompile>
-    <ClCompile Include="TEST_STATE_2.cpp">
-      <Filter>Source Files\Game\GameStates</Filter>
-    </ClCompile>
     <ClCompile Include="Sound.cpp">
       <Filter>Source Files\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="TEST_BALL.cpp">
-      <Filter>Source Files\Game\GameObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="TEST_PADDLE.cpp">
-      <Filter>Source Files\Game\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Mouse.cpp">
       <Filter>Source Files\Input</Filter>
@@ -194,20 +185,11 @@
     <ClInclude Include="TEST_STATE_1.h">
       <Filter>Header Files\Game\GameStates</Filter>
     </ClInclude>
-    <ClInclude Include="TEST_STATE_2.h">
-      <Filter>Header Files\Game\GameStates</Filter>
-    </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>Header Files\Sound</Filter>
     </ClInclude>
-    <ClInclude Include="TEST_BALL.h">
-      <Filter>Header Files\Game\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="Config.h">
       <Filter>Header Files\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="TEST_PADDLE.h">
-      <Filter>Header Files\Game\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Map.h">
       <Filter>Header Files</Filter>

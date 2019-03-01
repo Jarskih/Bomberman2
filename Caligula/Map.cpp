@@ -6,11 +6,13 @@
 #include <iostream>
 #include "Service.h"
 #include "State.h"
+#include "Player.h"
+#include "PowerUp.h"
 
-Map::Map(int level, std::vector<sp<Enemy>> m_enemyList)
+Map::Map(int level, std::vector<sp<EasyEnemy>> enemyList)
 {
 	generateMap(level);
-	spawnEnemiesAtStart(m_enemyList);
+	spawnEnemiesAtStart(enemyList);
 	spawnPowerUps();
 }
 
@@ -79,8 +81,8 @@ void Map::spawnEnemiesAtPosition(int x, int y, int number, int enemyType)
 {
 	for (auto numberOfEnemies = 0; numberOfEnemies < number; numberOfEnemies++)
 	{
-		const auto enemyObject = makesp<Enemy>(HARD_ENEMY, x, y);
-		m_enemyList.push_back(enemyObject);
+		const auto enemyObject = makesp<EasyEnemy>(HARD_ENEMY, x, y);
+		//m_enemyList.push_back(enemyObject);
 	}
 }
 
@@ -89,15 +91,16 @@ void Map::spawnEnemies(int number, int enemyType)
 	for (auto numberOfEnemies = 0; numberOfEnemies < number; numberOfEnemies++)
 	{
 		const auto block = findRandomGrassBlock();
-		const auto enemyObject = makesp<Enemy>(HARD_ENEMY, block->GetIndexX(), block->GetIndexY());
-		m_enemyList.push_back(enemyObject);
+		const auto enemyObject = makesp<EasyEnemy>(HARD_ENEMY, block->GetIndexX(), block->GetIndexY());
+
+		//m_enemyList.push_back(enemyObject);
 	}
 }
 
-void Map::spawnEnemiesAtStart(std::vector<sp<Enemy>> m_enemyList)
+void Map::spawnEnemiesAtStart(std::vector<sp<EasyEnemy>> m_enemyList)
 {
 	const auto player = makesp<Player>();
-	m_playerList.push_back(player);
+	//m_playerList.push_back(player);
 
 	const auto state = Service<State>::Get();
 
@@ -118,7 +121,7 @@ void Map::spawnEnemiesAtStart(std::vector<sp<Enemy>> m_enemyList)
 			const auto block = tileSet[x][y];
 			if (block->GetBlockType() == Config::GRASS)
 			{
-				const auto enemyObject = makesp<Enemy>(EASY_ENEMY, x, y);
+				const auto enemyObject = makesp<EasyEnemy>(EASY_ENEMY, x, y);
 				m_enemyList.push_back(enemyObject);
 				allowedBlock = true;
 				break;
@@ -151,16 +154,18 @@ void Map::spawnPowerUps()
 
 void Map::handleEvent(SDL_Event& event)
 {
+	/*
 	for (const auto& player : m_playerList)
 	{
 		player->handleEvent(event);
 	}
+	*/
 }
 
 void Map::addPowerUp(int indexX, int indexY, int powerUpType)
 {
 	const auto powerUp = makesp<PowerUp>(indexX, indexY, powerUpType);
-	m_powerUps.emplace_back(powerUp);
+	//m_powerUps.emplace_back(powerUp);
 }
 
 // Get block object from coordinates

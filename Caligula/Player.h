@@ -10,10 +10,9 @@ class Bomb;
 class Player : public Entity {
 public:
 	Player();
-	Player() = delete;
 	~Player() = default;
-	void Update(SDL_Renderer* p_renderer);
-	void Render();
+	void Update();
+	void Render(SDL_Renderer* p_renderer);
 	void handleEvent(SDL_Event& event);
 	void die();
 private:
@@ -35,7 +34,7 @@ public:
 	int m_old_state = 0;
 private:
 	std::string m_texture_name = "playerMoveDown";
-	SDL_Texture* loadTexture();
+	//SDL_Texture* loadTexture();
 	SDL_Rect m_window_rect = { 0, 0, Config::PLAYER_WIDTH, Config::PLAYER_HEIGHT };
 	SDL_Rect m_texture_rect = {};
 	SDL_Texture* m_texture = nullptr;

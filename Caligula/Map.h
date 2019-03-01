@@ -4,18 +4,17 @@
 #include "Helpers.h"
 #include "Block.h"
 //#include "Player.h"
-//#include "Enemy.h"
 #include "Timer.h"
+#include "Bomb.h"
+#include "EasyEnemy.h"
 //#include "PowerUp.h"
 
-class PowerUp;
-class Player;
-class Enemy;
 
 class Map
 {
 public:
-	Map(int level, std::vector<sp<Enemy>> m_enemyList);
+	Map() = delete;
+	Map(int level, std::vector<sp<EasyEnemy>> enemyList);
 	~Map() = default;
 	void Update(sp<Timer> &timer);
 	void Render();
@@ -30,14 +29,11 @@ public:
 	sp<Block> tileSet[Config::MAX_BLOCKS_X][Config::MAX_BLOCKS_Y] = {};
 	int m_score = 0;
 	int m_players = 1;
-	std::vector<sp<Player>> m_playerList = {};
-	std::vector<sp<Enemy>> m_enemyList = {};
-	std::vector<sp<PowerUp>> m_powerUps = {};
 	bool m_enemies_dead = false;
 	bool m_level_cleared = false;
 private:
 	void generateMap(int level);
-	void spawnEnemiesAtStart(std::vector<sp<Enemy>> m_enemyList);
+	void spawnEnemiesAtStart(std::vector<sp<EasyEnemy>> m_enemyList);
 	void spawnPowerUps();
 	void checkWinCondition();
 

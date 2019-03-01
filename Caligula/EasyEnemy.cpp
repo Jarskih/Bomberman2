@@ -4,12 +4,13 @@
 ///#include "Textures.h"
 //#include "Hud.h"
 #include "State.h"
+#include "Pathfinding.h"
 //#include "Bomb.h"
 //#include "Pathfinding.h"
 
-EasyEnemy::EasyEnemy(const EntityType enemy_type, SDL_Renderer* renderer, const int index_x, const int index_y) :
-	m_type(enemy_type), m_renderer(renderer)
+EasyEnemy::EasyEnemy(const EntityType enemy_type, const int index_x, const int index_y)
 {
+	m_type = enemy_type;
 	const auto blockCenter = Helpers::GetBlockCenter(index_x, index_y);
 	m_x = blockCenter.first;
 	m_y = blockCenter.second;
@@ -25,9 +26,9 @@ EasyEnemy::EasyEnemy(const EntityType enemy_type, SDL_Renderer* renderer, const 
 		m_decision_delay = 10;
 		m_sprite = "hardEnemy";
 	}
-	m_state = DOWN;
-	m_windowRect = { 0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT };
-	m_collider = { 0, 0, Config::BLOCK_WIDTH - Config::PADDING_X, Config::BLOCK_HEIGHT - Config::PADDING_Y };
+	//m_state = DOWN;
+	//m_windowRect = { 0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT };
+	//m_collider = { 0, 0, Config::BLOCK_WIDTH - Config::PADDING_X, Config::BLOCK_HEIGHT - Config::PADDING_Y };
 }
 
 void EasyEnemy::Update()
@@ -66,10 +67,10 @@ void EasyEnemy::Render(SDL_Renderer* p_renderer)
 	const int animatedFrames = 4;
 	const int delayPerFrame = 200;
 
-	m_collider.x = m_x;
-	m_collider.y = m_y;
+	//m_collider.x = m_x;
+	//m_collider.y = m_y;
 
-	if (!m_is_alive)
+	if (!m_active)
 	{
 		m_frame = 5;
 	}
@@ -78,14 +79,14 @@ void EasyEnemy::Render(SDL_Renderer* p_renderer)
 		m_frame = (SDL_GetTicks() / delayPerFrame) % animatedFrames;
 	}
 
-	m_textureRect.y = m_frame * m_textureRect.h;
-	SDL_QueryTexture(m_texture, nullptr, nullptr, &m_textureRect.w, &m_textureRect.h);
+	//m_textureRect.y = m_frame * m_textureRect.h;
+	//SDL_QueryTexture(m_texture, nullptr, nullptr, &m_textureRect.w, &m_textureRect.h);
 
-	m_textureRect.h /= totalFrames;
+	//m_textureRect.h /= totalFrames;
 
-	SDL_RenderCopy(m_renderer, m_texture, &m_textureRect, &m_windowRect);
+	//SDL_RenderCopy(m_renderer, m_texture, &m_textureRect, &m_windowRect);
 
-
+	/*
 	// Debug
 	const auto state = Service<State>::Get();
 	if (state->m_debug)
@@ -102,6 +103,7 @@ void EasyEnemy::Render(SDL_Renderer* p_renderer)
 			SDL_RenderDrawRect(m_renderer, block->GetCollider());
 		}
 	}
+	*/
 }
 
 void EasyEnemy::loadTexture(std::string sprite)
@@ -109,7 +111,7 @@ void EasyEnemy::loadTexture(std::string sprite)
 	if (!m_texture_loaded)
 	{
 		//auto textures = Service<Textures>::Get();
-		m_texture = textures->findTexture(sprite);
+		//m_texture = textures->findTexture(sprite);
 		m_texture_loaded = true;
 	}
 }
@@ -119,24 +121,25 @@ void EasyEnemy::decide()
 	if (m_type == HARD_ENEMY)
 	{
 		auto map = Service<Map>::Get();
-		const auto player = map->m_playerList.front();
-		target_block = map->findBlockByCoordinates(player->getPositionX(), player->getPositionY());
+		//const auto player = map->m_playerList.front();
+		//target_block = map->findBlockByCoordinates(player->getPositionX(), player->getPositionY());
 		current_block = map->findBlockByCoordinates(m_x, m_y);
 
 		// Only get new path if target block has changed
-		if (m_old_target_x != target_block->m_x || m_old_target_y != target_block->m_y)
+		if (m_old_target_x != target_block->GetPositionX() || m_old_target_y != target_block->GetPositionY())
 		{
 			m_path = Pathfinding::calculatePath(target_block, current_block);
 		}
 
-		m_decision_time = SDL_GetTicks(); a
-			m_old_target_x = target_block->m_index_x;
-		m_old_target_y = target_block->m_index_y;
+		m_decision_time = SDL_GetTicks();
+		m_old_target_x = target_block->GetPositionX();
+		m_old_target_y = target_block->GetPositionY();
 	}
 	else if (m_type == EASY_ENEMY)
 	{
 		const int random = rand() % 12;
 
+		/*
 		switch (m_state)
 		{
 		case UP:
@@ -198,6 +201,7 @@ void EasyEnemy::decide()
 		default:
 			break;
 		}
+		*/
 		m_decision_time = SDL_GetTicks();
 	}
 }
@@ -209,6 +213,7 @@ void EasyEnemy::move()
 	const int oldY = m_y;
 	bool colliding = false;
 
+	/*
 	switch (m_state) {
 	case UP:
 		m_pos_y -= m_speed;
@@ -229,7 +234,9 @@ void EasyEnemy::move()
 	m_collider.x = m_x + Config::PADDING_X;
 	m_windowRect.y = m_y;
 	m_collider.y = m_y + Config::PADDING_Y;
+	*/
 
+	/*
 	for (const auto& player : map->m_playerList)
 	{
 		for (const auto& bomb : player->m_bombs)
@@ -266,6 +273,7 @@ void EasyEnemy::move()
 		m_collider.y = m_y + Config::PADDING_Y;
 		decide();
 	}
+	*/
 
 }
 void EasyEnemy::smartMove()
@@ -277,13 +285,13 @@ void EasyEnemy::smartMove()
 
 	if (!m_path.empty())
 	{
-		const auto nextBlockCoordinates = Helpers::GetBlockCenter(m_next_block->m_x, m_next_block->m_y);
+		const auto nextBlockCoordinates = Helpers::GetBlockCenter(m_next_block->GetPositionX(), m_next_block->GetPositionY());
 
 		m_speed_x = 0;
 		m_speed_y = 0;
 
-		const int delta_x = abs(m_next_block->m_x - current_block->m_x);
-		const int delta_y = abs(m_next_block->m_y - current_block->m_y);
+		const int delta_x = abs(m_next_block->GetPositionX() - current_block->GetPositionY());
+		const int delta_y = abs(m_next_block->GetPositionX() - current_block->GetPositionY());
 
 		if (delta_x >= delta_y) {
 
@@ -311,6 +319,7 @@ void EasyEnemy::smartMove()
 		m_x += static_cast<int>(m_speed_x);
 	}
 
+	/*
 	m_windowRect.x = m_x;
 	m_collider.x = m_x + Config::PADDING_X;
 	m_windowRect.y = m_y;
@@ -352,11 +361,12 @@ void EasyEnemy::smartMove()
 		m_windowRect.y = m_y;
 		m_collider.y = m_y + Config::PADDING_Y;
 	}
+*/
 }
 
 void EasyEnemy::die()
 {
 	m_time_died = SDL_GetTicks();
 	m_active = false;
-	Service<State>::Get()->incrementScore(m_score);
+	//Service<State>::Get()->incrementScore(m_score);
 }

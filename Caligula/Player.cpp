@@ -8,6 +8,7 @@
 #include "Service.h"
 #include "State.h"
 #include "Collider.h"
+#include "Musicplayer.h"
 //#include "Textures.h"
 //#include "Musicplayer.h"
 
@@ -19,15 +20,18 @@ Player::Player()
 	m_active = true;
 	m_visible = true;
 	m_collider = new RectangleCollider(0, 0, Config::PLAYER_WIDTH / 3, Config::PLAYER_HEIGHT / 3);
-	m_windowRect = { 0, 0, Config::PLAYER_WIDTH, Config::PLAYER_HEIGHT };
-	m_textureRect = { 0, 0, 0, 0 };
-	m_state = IDLE_DOWN;
+	//	m_windowRect = { 0, 0, Config::PLAYER_WIDTH, Config::PLAYER_HEIGHT };
+	//	m_textureRect = { 0, 0, 0, 0 };
+	//	m_state = IDLE_DOWN;
 	m_speed_x = 0;
 	m_speed_y = 0;
 }
 
 void Player::Update()
 {
+	playerController();
+	movePlayer();
+	/*
 	if (m_state != DEAD)
 	{
 		playerController();
@@ -42,6 +46,7 @@ void Player::Update()
 	}
 	m_bombs = checkBombs();
 	m_bombs_dropped = static_cast<int>(m_bombs.size());
+	*/
 }
 
 
@@ -52,16 +57,19 @@ void Player::Render(SDL_Renderer* p_renderer) {
 
 	// Debug
 	const auto state = Service<State>::Get();
+	/*
 	if (state->m_debug == true) {
 		SDL_SetRenderDrawColor(p_renderer, 255, 255, 0, 255);
 		SDL_RenderDrawRect(p_renderer, &m_collider);
 	}
+	*/
 }
 
 std::vector<sp<Bomb>> Player::checkBombs()
 {
-	std::vector<sp<Bomb>> newBombs = {};
 
+	std::vector<sp<Bomb>> newBombs = {};
+	/*
 	for (const auto& bomb : m_bombs)
 	{
 		if (!bomb->isExploded)
@@ -69,11 +77,15 @@ std::vector<sp<Bomb>> Player::checkBombs()
 			newBombs.push_back(bomb);
 		}
 	}
+		*/
 	return newBombs;
+
 }
 
+/*
 SDL_Texture* Player::loadTexture()
 {
+
 	std::string name;
 
 	switch (m_state) {
@@ -108,10 +120,15 @@ SDL_Texture* Player::loadTexture()
 		break;
 	}
 	m_texture_name = name;
+
 	return Service<Textures>::Get()->findTexture(m_texture_name);
 }
+	*/
+
+
 
 void Player::handleEvent(SDL_Event& event) {
+	/*
 	if (m_state != DEAD)
 	{
 		if (event.type == SDL_KEYDOWN && event.key.repeat == 0)
@@ -126,11 +143,13 @@ void Player::handleEvent(SDL_Event& event) {
 			}
 		}
 	}
+	*/
 }
 
 
 void Player::playerController()
 {
+	/*
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(nullptr);
 	if (currentKeyStates[SDL_SCANCODE_UP])
 	{
@@ -175,38 +194,40 @@ void Player::playerController()
 		}
 		m_moving = false;
 	}
+	 */
 }
 
 void Player::movePlayer() {
-	const int oldX = m_pos_x;
-	const int oldY = m_pos_y;
+	/*
+	const int oldX = m_x;
+	const int oldY = m_y;
 	auto map = Service<Map>::Get();
 	bool colliding = false;
 
 	switch (m_state) {
 	case UP:
-		m_pos_y -= m_speed;
+		m_y -= m_speed;
 		m_moving = true;
 		break;
 	case IDLE_UP:
 		m_moving = false;
 		break;
 	case DOWN:
-		m_pos_y += m_speed;
+		m_y += m_speed;
 		m_moving = true;
 		break;
 	case IDLE_DOWN:
 		m_moving = false;
 		break;
 	case LEFT:
-		m_pos_x -= m_speed;
+		m_x -= m_speed;
 		m_moving = true;
 		break;
 	case IDLE_LEFT:
 		m_moving = false;
 		break;
 	case RIGHT:
-		m_pos_x += m_speed;
+		m_x += m_speed;
 		m_moving = true;
 		break;
 	case IDLE_RIGHT:
@@ -271,25 +292,29 @@ void Player::movePlayer() {
 	{
 		m_x = oldX;
 		m_window_rect.x = m_x;
-		m_collider.x = m_pos_x + Config::PLAYER_WIDTH / 3;
+		m_collider.x = m_x + Config::PLAYER_WIDTH / 3;
 
 		m_y = oldY;
 		m_window_rect.y = m_y;
-		m_collider.y = m_pos_y + Config::PLAYER_HEIGHT / 2;
+		m_collider.y = m_y + Config::PLAYER_HEIGHT / 2;
 	}
+	*/
 }
 
 void Player::renderBombs()
 {
+	/*
 	for (const auto& bomb : m_bombs)
 	{
 		bomb->render(m_renderer);
 	}
+	*/
 }
 
 
 void Player::die()
 {
+	/*
 	if (m_state != DEAD)
 	{
 		m_time_died = SDL_GetTicks();
@@ -299,10 +324,12 @@ void Player::die()
 		m_state = DEAD;
 		MusicPlayer::PlaySoundFromPath("sounds/player_death.wav");
 	}
+	*/
 }
 
 void Player::animate()
 {
+	/*
 	int totalFrames = 8;
 
 	switch (m_state) {
@@ -376,9 +403,11 @@ void Player::animate()
 	m_texture_rect.h /= totalFrames;
 
 	SDL_RenderCopy(m_renderer, m_texture, &m_texture_rect, &m_window_rect);
+	*/
 }
 
 void Player::dropBomb() {
+	/*
 	auto map = Service<Map>::Get();
 	if (m_max_bombs > m_bombs_dropped)
 	{
@@ -389,4 +418,5 @@ void Player::dropBomb() {
 		bomb->load_textures(m_renderer, "bomb");
 		m_bombs.emplace_back(bomb);
 	}
+	*/
 }

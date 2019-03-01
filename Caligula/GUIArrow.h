@@ -2,14 +2,15 @@
 #include <SDL.h>
 #include "State.h"
 #include "Helpers.h"
-#include "Textures.h"
+//#include "Textures.h"
 
-struct State;
+class State;
 
 class GUIArrow
 {
 public:
-	GUIArrow(sp<Textures> textures);
+	//GUIArrow(sp<Textures> textures);
+	GUIArrow() = default;
 	~GUIArrow();
 	void up();
 	void down();

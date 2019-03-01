@@ -3,6 +3,7 @@
 #include <string>
 #include "Timer.h"
 #include "Helpers.h"
+#include <SDL_ttf.h>
 
 class Hud
 {
