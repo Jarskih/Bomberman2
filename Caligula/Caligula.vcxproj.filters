@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Collision">
+      <UniqueIdentifier>{d82b69cc-f99b-42c3-8104-5d23125c8b46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Sprites">
+      <UniqueIdentifier>{394d8559-df4c-4dce-8cac-530613d70315}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sprites">
+      <UniqueIdentifier>{99ac9ebc-94db-40c4-b869-b49d05f967ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utility">
+      <UniqueIdentifier>{d11c3572-9c9c-4b0c-9d6f-469918ed24a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Collision">
+      <UniqueIdentifier>{218d25f9-7be3-4fcd-a0ee-edab98cfafe6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Input">
+      <UniqueIdentifier>{d68010a5-0ab7-4b89-92de-770d5fb4e22a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\FSM">
+      <UniqueIdentifier>{6675656a-1554-4c8a-9f96-7c6b62f7f48b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FSM">
+      <UniqueIdentifier>{8dc9cad3-9304-4d89-b442-b1c22f7ceffe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Input">
+      <UniqueIdentifier>{08bfdccf-f0a4-47cb-99cb-ceecc850795e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sound">
+      <UniqueIdentifier>{11c9d80a-77c8-4cf8-a3c6-264f545ffeb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Sound">
+      <UniqueIdentifier>{01d443e0-8cf3-485b-9c9b-050c4042d9e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{30e2bd31-9141-4c9e-9253-ee4ab20bac04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\GameStates">
+      <UniqueIdentifier>{d8519196-bdd2-46f9-a56f-3eadcdb7e983}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\GameObjects">
+      <UniqueIdentifier>{0fdc212a-9063-47a9-8f9d-adae3501313f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game">
+      <UniqueIdentifier>{242cdae3-a2a6-4557-8a63-f61b3bd4058e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\GameStates">
+      <UniqueIdentifier>{d3307eff-3c15-4f3c-a1e3-c89b3cb94736}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\GameObjects">
+      <UniqueIdentifier>{a9c7f400-41ee-4836-8e1a-4ce915dd03b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity">
+      <UniqueIdentifier>{f7a75823-1720-45cc-839c-97bc90ea24f5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Source Files\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteHandler.cpp">
+      <Filter>Source Files\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>Source Files\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionHandler.cpp">
+      <Filter>Source Files\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="FSM.cpp">
+      <Filter>Source Files\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="InputHandler.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundHandler.cpp">
+      <Filter>Source Files\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="TEST_STATE_1.cpp">
+      <Filter>Source Files\Game\GameStates</Filter>
+    </ClCompile>
+    <ClCompile Include="TEST_STATE_2.cpp">
+      <Filter>Source Files\Game\GameStates</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Source Files\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="TEST_BALL.cpp">
+      <Filter>Source Files\Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="TEST_PADDLE.cpp">
+      <Filter>Source Files\Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Mouse.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Helpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MusicPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hud.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PowerUp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIArrow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Pathfinding.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Block.cpp">
+      <Filter>Source Files\Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Bomb.cpp">
+      <Filter>Source Files\Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="EasyEnemy.cpp">
+      <Filter>Source Files\Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Flame.cpp">
+      <Filter>Source Files\Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\Game\GameObjects</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Entity.h">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionHandler.h">
+      <Filter>Header Files\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Header Files\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteHandler.h">
+      <Filter>Header Files\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="Service.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Header Files\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="InputHandler.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="FSM.h">
+      <Filter>Header Files\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundHandler.h">
+      <Filter>Header Files\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="State.h">
+      <Filter>Header Files\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="TEST_STATE_1.h">
+      <Filter>Header Files\Game\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="TEST_STATE_2.h">
+      <Filter>Header Files\Game\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound.h">
+      <Filter>Header Files\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="TEST_BALL.h">
+      <Filter>Header Files\Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="TEST_PADDLE.h">
+      <Filter>Header Files\Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MusicPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hud.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PowerUp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIArrow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Pathfinding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Block.h">
+      <Filter>Header Files\Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Bomb.h">
+      <Filter>Header Files\Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="EasyEnemy.h">
+      <Filter>Header Files\Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Flame.h">
+      <Filter>Header Files\Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Game\GameObjects</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
