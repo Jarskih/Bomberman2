@@ -17,6 +17,12 @@ struct Config
 	// Player
 	static const int PLAYER_WIDTH = BLOCK_WIDTH * 2;
 	static const int PLAYER_HEIGHT = BLOCK_HEIGHT * 15 / 10;
+	static const int PLAYER_COLLIDER_X = Config::PLAYER_WIDTH / 3;
+	static const int PLAYER_COLLIDER_Y = Config::PLAYER_HEIGHT / 3;
+	static const int PLAYER_COLLIDER_WIDTH = PLAYER_WIDTH / 3;
+	static const int PLAYER_COLLIDER_HEIGHT = PLAYER_HEIGHT / 2;
+	static const int PLAYER_STARTING_POS_X = Config::BLOCK_WIDTH + Config::BLOCK_WIDTH / 2;
+	static const int PLAYER_STARTING_POS_Y = Config::BLOCK_HEIGHT + Config::BLOCK_HEIGHT / 2;
 
 	static const int NUMBER_OF_PLAYERS = 1;
 	static const int STARTING_LIVES = 2;

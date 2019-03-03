@@ -167,6 +167,7 @@
     <ClCompile Include="SoundHandler.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteHandler.cpp" />
+    <ClCompile Include="SpriteSheet.cpp" />
     <ClCompile Include="TEST_STATE_1.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
@@ -196,6 +197,7 @@
     <ClInclude Include="SoundHandler.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpriteHandler.h" />
+    <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="TEST_STATE_1.h" />
     <ClInclude Include="Timer.h" />

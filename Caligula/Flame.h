@@ -1,8 +1,8 @@
 ﻿#pragma once
-#include <SDL.h>
 #include <string>
 #include <map>
 #include "Entity.h"
+#include <SDL.h>
 
 class Flame : Entity
 {

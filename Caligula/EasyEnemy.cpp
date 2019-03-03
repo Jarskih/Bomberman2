@@ -118,6 +118,7 @@ void EasyEnemy::loadTexture(std::string sprite)
 
 void EasyEnemy::decide()
 {
+	/*
 	if (m_type == HARD_ENEMY)
 	{
 		auto map = Service<Map>::Get();
@@ -201,9 +202,10 @@ void EasyEnemy::decide()
 		default:
 			break;
 		}
-		*/
-		m_decision_time = SDL_GetTicks();
-	}
+
+	m_decision_time = SDL_GetTicks();
+}
+			*/
 }
 
 void EasyEnemy::move()

@@ -1,32 +1,31 @@
 ﻿#pragma once
 #include "Map.h"
-//#include "Player.h"
-//#include "Enemy.h"
 #include <fstream>
 #include <iostream>
-#include "Service.h"
 #include "State.h"
 #include "Player.h"
-#include "PowerUp.h"
 
 Map::Map(int level, std::vector<sp<EasyEnemy>> enemyList)
 {
 	generateMap(level);
-	spawnEnemiesAtStart(enemyList);
-	spawnPowerUps();
 }
 
-void Map::Update(sp<Timer> &timer)
+void Map::Update()
 {
 }
 
-void Map::Render()
+void Map::Render(SDL_Renderer* p_renderer)
 {
+	for (int y = 0; y < m_size_y; y++) {
+		for (int x = 0; x < m_size_x; x++) {
+			auto block = tileSet[x][y];
+			block->Render(p_renderer);
+		}
+	}
 }
 
 void Map::generateMap(int level)
 {
-	const auto state = Service<State>::Get();
 	std::string levelPath;
 
 	//Open the map
@@ -53,6 +52,7 @@ void Map::generateMap(int level)
 		for (int x = 0; x < m_size_x; x++) {
 			int posX = x * Config::BLOCK_WIDTH;
 			int posY = y * Config::BLOCK_HEIGHT;
+			bool hasCollider = true;
 
 			//Determines what kind of block will be made
 			int blockType = -1;
@@ -70,87 +70,66 @@ void Map::generateMap(int level)
 			}
 			else
 			{
-				const sp<Block> block = makesp<Block>(posX, posY, blockType);
+				if (blockType == Config::Blocks::GRASS)
+				{
+					hasCollider = false;
+				}
+				const sp<Block> block = makesp<Block>(GetSpritePath(blockType),
+					0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT,
+					0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT,
+					posX, posY,
+					blockType, hasCollider);
 				tileSet[x][y] = block;
 			}
 		}
 	}
 }
 
-void Map::spawnEnemiesAtPosition(int x, int y, int number, int enemyType)
+const char* Map::GetSpritePath(const int blockType)
 {
-	for (auto numberOfEnemies = 0; numberOfEnemies < number; numberOfEnemies++)
+	switch (blockType)
 	{
-		const auto enemyObject = makesp<EasyEnemy>(HARD_ENEMY, x, y);
-		//m_enemyList.push_back(enemyObject);
+	case Config::BREAKABLE:
+		return "img/block.png";
+		break;
+	case Config::NONBREAKABLE:
+		return "img/whiteBlock.png";
+		break;
+	case Config::WALL_UP:
+		return "img/wallTop.png";
+		break;
+	case Config::WALL_LEFT:
+		return "img/wallLeft.png";
+		break;
+	case Config::WALL_RIGHT:
+		return "img/wallRight.png";
+		break;
+	case Config::WALL_DOWN:
+		return "img/wallDown.png";
+		break;
+	case Config::WALL_LEFT_UP:
+		return "img/wallTopLeft.png";
+		break;
+	case Config::WALL_RIGHT_UP:
+		return "img/wallTopRight.png";
+		break;
+	case Config::WALL_LEFT_DOWN:
+		return "img/wallDown.png";
+		break;
+	case Config::WALL_RIGHT_DOWN:
+		return "img/wallDown.png";
+		break;
+	case Config::GRASS:
+		return "img/grass.png";
+		break;
+	case Config::DESTROYED:
+		return "img/block_breaking.png";
+		break;
+	default:
+		return "img/block.png";
 	}
 }
 
-void Map::spawnEnemies(int number, int enemyType)
-{
-	for (auto numberOfEnemies = 0; numberOfEnemies < number; numberOfEnemies++)
-	{
-		const auto block = findRandomGrassBlock();
-		const auto enemyObject = makesp<EasyEnemy>(HARD_ENEMY, block->GetIndexX(), block->GetIndexY());
-
-		//m_enemyList.push_back(enemyObject);
-	}
-}
-
-void Map::spawnEnemiesAtStart(std::vector<sp<EasyEnemy>> m_enemyList)
-{
-	const auto player = makesp<Player>();
-	//m_playerList.push_back(player);
-
-	const auto state = Service<State>::Get();
-
-	for (int enemy = 0; enemy < m_enemyList.size(); enemy++)
-	{
-		bool allowedBlock = false;
-		while (!allowedBlock)
-		{
-			int x = Helpers::RandomNumber(Config::MAX_BLOCKS_X - 1);
-			int y = Helpers::RandomNumber(Config::MAX_BLOCKS_Y - 1);
-
-			// Do not spawn enemies next to player
-			if (x < 5 || y < 5)
-			{
-				continue;
-			}
-
-			const auto block = tileSet[x][y];
-			if (block->GetBlockType() == Config::GRASS)
-			{
-				const auto enemyObject = makesp<EasyEnemy>(EASY_ENEMY, x, y);
-				m_enemyList.push_back(enemyObject);
-				allowedBlock = true;
-				break;
-			}
-		}
-	}
-}
-
-void Map::spawnPowerUps()
-{
-	int x = 0;
-	int y = 0;
-
-	for (auto powerUpType = 0; powerUpType < 5; powerUpType++)
-	{
-		bool allowedBlock = false;
-		while (!allowedBlock)
-		{
-			x = Helpers::RandomNumber(Config::MAX_BLOCKS_X - 1);
-			y = Helpers::RandomNumber(Config::MAX_BLOCKS_Y - 1);
-
-			if (tileSet[x][y]->GetBlockType() == Config::BREAKABLE && !tileSet[x][y]->HasPowerUp()) {
-				tileSet[x][y]->SpawnPowerUp(powerUpType);
-				allowedBlock = true;
-				break;
-			}
-		}
-	}
-}
 
 void Map::handleEvent(SDL_Event& event)
 {
@@ -162,12 +141,6 @@ void Map::handleEvent(SDL_Event& event)
 	*/
 }
 
-void Map::addPowerUp(int indexX, int indexY, int powerUpType)
-{
-	const auto powerUp = makesp<PowerUp>(indexX, indexY, powerUpType);
-	//m_powerUps.emplace_back(powerUp);
-}
-
 // Get block object from coordinates
 sp<Block> Map::findBlockByCoordinates(const int x, const int y)
 {
@@ -177,30 +150,11 @@ sp<Block> Map::findBlockByCoordinates(const int x, const int y)
 
 sp<Block> Map::findBlockByIndex(const int x, const int y)
 {
-	if (x > 0 && y > 0 && x < Config::MAX_BLOCKS_X - 1 && y < Config::MAX_BLOCKS_Y - 1) {
+	if (x >= 0 && y >= 0 && x < Config::MAX_BLOCKS_X && y < Config::MAX_BLOCKS_Y) {
 		return tileSet[x][y];
 	}
 	else
 	{
-		return nullptr;
+		return tileSet[0][0];
 	}
-}
-
-sp<Block> Map::findRandomGrassBlock()
-{
-	bool foundBlock = false;
-	sp<Block> grassBlock = nullptr;
-	while (!foundBlock)
-	{
-		const int x = Helpers::RandomNumber(Config::MAX_BLOCKS_X - 1);
-		const int y = Helpers::RandomNumber(Config::MAX_BLOCKS_Y - 1);
-
-		const auto block = tileSet[x][y];
-		if (block->GetBlockType() == Config::GRASS)
-		{
-			foundBlock = true;
-			grassBlock = block;
-		}
-	}
-	return grassBlock;
 }

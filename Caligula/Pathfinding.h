@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <list>
 #include "Helpers.h"
+#include "Block.h"
 
 class Block;
 

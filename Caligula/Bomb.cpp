@@ -1,5 +1,5 @@
 ﻿#include "Bomb.h"
-#include "Musicplayer.h"
+#include "MusicPlayer.h"
 #include <SDL_image.h>
 #include <iostream>
 #include "Flame.h"
@@ -25,7 +25,7 @@ Bomb::~Bomb()
 	Mix_FreeChunk(m_chunk);
 }
 
-void Bomb::render(SDL_Renderer* renderer)
+void Bomb::Render(SDL_Renderer* renderer)
 {
 	/*
 	const Uint32 currentTime = SDL_GetTicks() - timeDropped;
@@ -216,6 +216,8 @@ void Bomb::renderFlames(SDL_Renderer* renderer, int frames)
 
 bool Bomb::canSpawnFlame(const sp<Map> &map, const int x, const int y)
 {
+	return false;
+	/*
 	bool allowed = false;
 	switch (map->tileSet[x][y]->GetBlockType()) {
 	case Config::GRASS:
@@ -228,4 +230,5 @@ bool Bomb::canSpawnFlame(const sp<Map> &map, const int x, const int y)
 		break;
 	}
 	return allowed;
+	*/
 }

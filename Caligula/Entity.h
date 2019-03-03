@@ -4,7 +4,10 @@ enum EntityType
 {
 	PLAYER,
 	EASY_ENEMY,
-	HARD_ENEMY
+	HARD_ENEMY,
+	BLOCK,
+	BOMB,
+	FLAME,
 };
 //  Base Class for all entity types
 class Sprite;
@@ -22,9 +25,11 @@ protected:
 	Sprite* m_sprite;
 	Collider* m_collider;
 	EntityType m_type;
+	int m_blockType;
 
 public:
 	EntityType GetType() const { return m_type; };
+	int GetBlockType() const { return m_blockType; };
 	bool IsActive() const { return m_active; }
 	bool IsVisible() const { return m_visible; }
 	virtual ~Entity() {};

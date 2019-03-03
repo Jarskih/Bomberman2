@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <SDL.h>
 #include "State.h"
 #include "Helpers.h"
 //#include "Textures.h"

@@ -6,7 +6,7 @@
 namespace Pathfinding {
 	std::list<sp<Block>> discoverNeighbors(sp<Block> &block)
 	{
-		std::list<sp<Block>> neighbors;
+		std::list< sp<Block>> neighbors;
 		const auto map = Service<Map>::Get();
 
 		for (int y = -1; y <= 1; y++)
@@ -21,7 +21,7 @@ namespace Pathfinding {
 
 			if (checkY >= 0 && checkY < Config::MAX_BLOCKS_Y)
 			{
-				neighbors.push_front(map->tileSet[checkX][checkY]);
+				neighbors.push_front(map->findBlockByIndex(checkX, checkY));
 			}
 		}
 
@@ -38,7 +38,7 @@ namespace Pathfinding {
 
 			if (checkX >= 0 && checkX < Config::MAX_BLOCKS_X)
 			{
-				neighbors.push_front(map->tileSet[checkX][checkY]);
+				neighbors.push_front(map->findBlockByIndex(checkX, checkY));
 			}
 		}
 
@@ -96,7 +96,7 @@ namespace Pathfinding {
 			// Find closest block to target from start
 			for (auto &block : open)
 			{
-				if (block->fCost() < current->fCost() || block->fCost() == current->fCost() && block->m_h_cost < current->m_h_cost)
+				if (block->fCost() < current->fCost() || block->fCost() == current->fCost() && block->hCost() < current->hCost())
 				{
 					current = block;
 				}
@@ -121,12 +121,12 @@ namespace Pathfinding {
 					continue;
 				}
 
-				const int newCostToNeighbor = current->m_g_cost + getDistance(current, neighbor);
+				const int newCostToNeighbor = current->gCost() + getDistance(current, neighbor);
 				//if new path to neighbor is shorter or neighbor is not in open
-				if (newCostToNeighbor < neighbor->m_g_cost || std::find(open.begin(), open.end(), neighbor) == open.end())
+				if (newCostToNeighbor < neighbor->gCost() || std::find(open.begin(), open.end(), neighbor) == open.end())
 				{
-					neighbor->m_g_cost = newCostToNeighbor;
-					neighbor->m_h_cost = getDistance(neighbor, target);
+					neighbor->SetGCost(newCostToNeighbor);
+					neighbor->SetHCost(getDistance(neighbor, target));
 					neighbor->SetParent(current);
 
 					if (std::find(open.begin(), open.end(), neighbor) == open.end())

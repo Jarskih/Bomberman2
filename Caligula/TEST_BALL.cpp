@@ -1,4 +1,4 @@
-#include "TEST_BALL.h"
+﻿#include "TEST_BALL.h"
 #include "Sprite.h"
 #include "SpriteHandler.h"
 #include "Service.h"
@@ -7,7 +7,6 @@
 
 TEST_BALL::TEST_BALL(const char * p_textureFilePath, int p_srcX, int p_srcY, int p_srcW, int p_srcH, int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH, int p_x, int p_y, int p_speedX, int p_speedY)
 {
-	m_type = EntityType::BALL;
 	m_sprite = Service<SpriteHandler>::Get()->CreateSprite(p_textureFilePath, p_srcX, p_srcY, p_srcW, p_srcH);
 	m_collider = new RectangleCollider(p_colliderX, p_colliderY, p_colliderW, p_colliderH);
 	m_x = p_x; m_y = p_y;
@@ -51,19 +50,19 @@ void TEST_BALL::Render(SDL_Renderer * p_renderer)
 	SDL_Rect dst = { m_x, m_y, m_sprite->GetArea().w, m_sprite->GetArea().h };
 	SDL_RenderCopy(p_renderer, m_sprite->GetTexture(), &m_sprite->GetArea(), &dst);
 
-	SDL_SetRenderDrawColor(p_renderer, 0,255,0,0);
+	SDL_SetRenderDrawColor(p_renderer, 0, 255, 0, 0);
 	SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
 }
 
 void TEST_BALL::Update()
 {
 	if (!m_active)
-		return; 
+		return;
 
 	m_x += m_speedX;
 	m_y += m_speedY;
 	m_collider->SetPosition(m_x, m_y);
-	
+
 	if (m_y < 0) // top
 	{
 		m_y = 0;
@@ -87,7 +86,7 @@ void TEST_BALL::OnCollision(Entity* p_other)
 			m_x = p_other->GetCollider()->GetBounds().x - m_collider->GetBounds().w - 1;
 			m_collider->SetPosition(m_x, m_y);
 		}
-		else if(ballCenter > paddleCenter)
+		else if (ballCenter > paddleCenter)
 		{
 			m_x = p_other->GetCollider()->GetBounds().x + m_collider->GetBounds().w + 1;
 			m_collider->SetPosition(m_x, m_y);

@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <SDL.h>
 #include <string>
 #include <vector>
 #include <SDL_mixer.h>
@@ -8,6 +7,7 @@
 #include <map>
 #include "Entity.h"
 
+class Block;
 class Map;
 class Enemy;
 class Flame;
@@ -20,7 +20,7 @@ public:
 	Bomb(int flamePower, int posX, int posY, sp<Map> map);;
 	~Bomb();
 	bool isExploded = false;
-	void render(SDL_Renderer* renderer);
+	void Render(SDL_Renderer* renderer);
 	void load_textures(SDL_Renderer* renderer, const std::string &sprite);
 	SDL_Rect collider = { 0,0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT };
 	bool hitFlame = false;

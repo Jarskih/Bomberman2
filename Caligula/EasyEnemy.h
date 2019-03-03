@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include <list>
-#include <SDL.h>
 #include "Helpers.h"
 #include "Entity.h"
+#include "Block.h"
 
 class Entity;
 class Map;

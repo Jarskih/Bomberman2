@@ -1,32 +1,36 @@
-﻿#include "Block.h"
-#include <SDL.h>
-// #include "PowerUp.h"
-#include "Map.h"
+﻿#include "Sprite.h"
 #include "SpriteHandler.h"
 #include "Service.h"
+#include "Collider.h"
+#include "Config.h"
+#include "Block.h"
 
-Block::Block(int p_x, int p_y, int blockType)
+Block::Block(const char* p_textureFilePath, int p_srcX, int p_srcY, int p_srcW, int p_srcH, int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH, int p_x, int p_y, int p_block_type, bool p_has_collider)
 {
-	m_block_type = blockType;
-	m_old_block_type = blockType;
-
-	m_x = p_x; m_y = p_y;
-	m_index_x = Helpers::GetCurrentBlock(m_x, m_y).first;
-	m_index_y = Helpers::GetCurrentBlock(m_x, m_y).second;
-
-	std::string texturePath = getTexturePath();
-	m_sprite = Service<SpriteHandler>::Get()->CreateSprite(texturePath.c_str(), 0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT);
-
-	m_power_up_added = false;
-	m_block_has_power_up = false;
-	m_power_up_type = 0;
-	m_g_cost = 0;
-	m_h_cost = 0;
-	timeExploded = 0;
-	m_frame = 0;
+	m_block_type = p_block_type;
+	m_type = BLOCK;
+	m_x = p_x;
+	m_y = p_y;
+	m_sprite = Service<SpriteHandler>::Get()->CreateSprite(p_textureFilePath, p_srcX, p_srcY, p_srcW, p_srcH);
+	if (p_has_collider)
+	{
+		m_collider = new RectangleCollider(p_colliderX, p_colliderY, p_colliderW, p_colliderH);
+		m_collider->SetPosition(m_x, m_y);
+	}
+	else
+	{
+		m_collider = new RectangleCollider(0, 0, 0, 0);
+	}
 }
 
 void Block::Render(SDL_Renderer* p_renderer) {
+	SDL_Rect dst = { m_x, m_y, m_sprite->GetArea().w, m_sprite->GetArea().h };
+	SDL_RenderCopy(p_renderer, m_sprite->GetTexture(), &m_sprite->GetArea(), &dst);
+
+	SDL_SetRenderDrawColor(p_renderer, 0, 255, 0, 0);
+	SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
+
+	/*
 	if (m_old_block_type != m_block_type)
 	{
 		//LoadTexture();
@@ -67,6 +71,7 @@ void Block::Render(SDL_Renderer* p_renderer) {
 	{
 		SDL_RenderCopy(p_renderer, m_texture, nullptr, &m_window_rect);
 	}
+	*/
 }
 
 void Block::Update()
@@ -78,9 +83,29 @@ std::pair <int, int> Block::getBlockIndex() const
 	return Helpers::GetCurrentBlock(m_x, m_y);
 }
 
+int Block::gCost() const
+{
+	return m_g_cost;
+}
+
+int Block::hCost() const
+{
+	return m_h_cost;
+}
+
 int Block::fCost() const
 {
 	return m_g_cost + m_h_cost;
+}
+
+void Block::SetHCost(int h_cost)
+{
+	m_h_cost = h_cost;
+}
+
+void Block::SetGCost(int g_cost)
+{
+	m_g_cost = g_cost;
 }
 
 int Block::GetIndexX() const

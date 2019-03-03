@@ -4,44 +4,65 @@
 #include "Entity.h"
 #include "Helpers.h"
 #include "Config.h"
+#include "Block.h"
 
+class SpriteSheet;
 class Bomb;
 
 class Player : public Entity {
 public:
-	Player();
+	Player(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
+		int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH,
+		int p_x, int p_y,
+		int m_lives);
 	~Player() = default;
-	void Update();
-	void Render(SDL_Renderer* p_renderer);
+	void Update() override;
+	void Render(SDL_Renderer* p_renderer) override;
+	void OnCollision(Entity* p_other) override;
 	void handleEvent(SDL_Event& event);
 	void die();
 private:
+	enum States { IDLE_UP, IDLE_DOWN, IDLE_LEFT, IDLE_RIGHT, DOWN, UP, LEFT, RIGHT, DEAD };
 	std::vector<sp<Bomb>> checkBombs();
+	void createSprites();
 	void playerController();
 	void movePlayer();
+
 	void renderBombs();
 	void dropBomb();
-	void animate();
+	void animate(SDL_Renderer* p_renderer);
 
-public:
+	int m_oldX;
+	int m_oldY;
+
+	int m_srcX;
+	int m_srcY;
+	int m_srcW;
+	int m_srcH;
+
+	int m_lives;
+	int m_speed_x;
+	int m_speed_y;
+	std::vector<sp<Bomb>> m_bombs = {};
 	bool m_moving = false;
 	int m_speed = 3;
 	int m_flame_power = 1;
 	int m_max_bombs = 1;
-	int m_lives = Config::STARTING_LIVES;
-	std::vector<sp<Bomb>> m_bombs = {};
 	int m_bombs_dropped = 0;
 	int m_old_state = 0;
-private:
-	std::string m_texture_name = "playerMoveDown";
-	//SDL_Texture* loadTexture();
-	SDL_Rect m_window_rect = { 0, 0, Config::PLAYER_WIDTH, Config::PLAYER_HEIGHT };
-	SDL_Rect m_texture_rect = {};
-	SDL_Texture* m_texture = nullptr;
+	int m_state = LEFT;
+
 	int m_frame = 0;
 	Uint32 m_time_died = 0;
 	Uint32 m_old_time = 0;
 	Uint32 m_delay_per_frame = 100;
-	int m_speed_x;
-	int m_speed_y;
+
+	SDL_Rect m_window_rect = { 0, 0, Config::PLAYER_WIDTH, Config::PLAYER_HEIGHT };
+	SpriteSheet* m_spriteSheet;
+	SpriteSheet* m_deathSprite;
+	SpriteSheet* m_playerMoveDown;
+	SpriteSheet* m_playerMoveUp;
+	SpriteSheet* m_playerMoveLeft;
+	SpriteSheet* m_playerMoveRight;
+
 };
