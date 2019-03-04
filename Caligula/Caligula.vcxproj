@@ -153,6 +153,7 @@
     <ClCompile Include="Hud.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="Music.cpp" />
     <ClCompile Include="MusicPlayer.cpp" />
     <ClCompile Include="Pathfinding.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Hud.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="Music.h" />
     <ClInclude Include="MusicPlayer.h" />
     <ClInclude Include="Pathfinding.h" />
     <ClInclude Include="Player.h" />

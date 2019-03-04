@@ -11,6 +11,7 @@ enum EntityType
 };
 //  Base Class for all entity types
 class Sprite;
+class SpriteSheet;
 class Collider;
 struct SDL_Renderer;
 
@@ -23,6 +24,7 @@ protected:
 	bool m_active; // If inactive, do not update
 	bool m_visible; // If inactive, do not render
 	Sprite* m_sprite;
+	SpriteSheet* m_spriteSheet;
 	Collider* m_collider;
 	EntityType m_type;
 	int m_blockType;

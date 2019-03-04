@@ -1,4 +1,4 @@
-#include "Sound.h"
+﻿#include "Sound.h"
 #include <SDL_mixer.h>
 
 Sound::Sound(Mix_Chunk * p_chunk) : m_channel(0)

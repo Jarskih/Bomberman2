@@ -17,19 +17,17 @@ public:
 		int m_lives);
 	~Player() = default;
 	void Update() override;
+	void Update(int bombs);
 	void Render(SDL_Renderer* p_renderer) override;
 	void OnCollision(Entity* p_other) override;
-	void handleEvent(SDL_Event& event);
-	void die();
+	void Die();
+	sp<Bomb> DropBomb();
+	bool IsDropBombPressed();
 private:
 	enum States { IDLE_UP, IDLE_DOWN, IDLE_LEFT, IDLE_RIGHT, DOWN, UP, LEFT, RIGHT, DEAD };
-	std::vector<sp<Bomb>> checkBombs();
 	void createSprites();
 	void playerController();
 	void movePlayer();
-
-	void renderBombs();
-	void dropBomb();
 	void animate(SDL_Renderer* p_renderer);
 
 	int m_oldX;
@@ -46,6 +44,13 @@ private:
 	std::vector<sp<Bomb>> m_bombs = {};
 	bool m_moving = false;
 	int m_speed = 3;
+
+	SDL_Scancode m_moveUp;
+	SDL_Scancode m_moveDown;
+	SDL_Scancode m_moveLeft;
+	SDL_Scancode m_moveRight;
+	SDL_Scancode m_dropBomb;
+
 	int m_flame_power = 1;
 	int m_max_bombs = 1;
 	int m_bombs_dropped = 0;
@@ -64,5 +69,5 @@ private:
 	SpriteSheet* m_playerMoveUp;
 	SpriteSheet* m_playerMoveLeft;
 	SpriteSheet* m_playerMoveRight;
-
+	int p_src_x_;
 };

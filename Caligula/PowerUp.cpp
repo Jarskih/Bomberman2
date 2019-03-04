@@ -1,9 +1,8 @@
 ﻿#include "PowerUp.h"
 #include "Map.h"
-#include "Musicplayer.h"
-#include "State.h"
 
-PowerUp::PowerUp(const int indexX, const int indexY, const int type) : m_type(type), m_index_x(indexX), m_index_y(indexY)
+PowerUp::PowerUp(const int index_x, const int index_y, const int type) : m_index_x(index_x), m_index_y(index_y),
+m_type(type)
 {
 	const auto blockCenter = Helpers::GetBlockCenter(m_index_x, m_index_y);
 	m_collider.x = blockCenter.first;
@@ -12,8 +11,6 @@ PowerUp::PowerUp(const int indexX, const int indexY, const int type) : m_type(ty
 	m_pos_y = blockCenter.second;
 	m_window_rect.x = blockCenter.first;
 	m_window_rect.y = blockCenter.second;
-
-	//m_texture = Service<Textures>::Get()->findTexture("powerUps");
 }
 
 void PowerUp::render()
@@ -31,7 +28,7 @@ void PowerUp::render()
 	SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 0);
 	SDL_RenderDrawRect(m_renderer, &m_window_rect);
 
-	const auto map = Service<Map>::Get();
+	/*
 	if (m_type == EXIT && !map->m_enemies_dead)
 	{
 		m_frame = 0;
@@ -40,6 +37,7 @@ void PowerUp::render()
 	{
 		m_frame = (SDL_GetTicks() / delayPerFrame) % m_total_frames;
 	}
+	*/
 
 	m_texture_rect.y = m_frame * m_texture_rect.h;
 	SDL_QueryTexture(m_texture, nullptr, nullptr, &m_texture_rect.w, &m_texture_rect.h);

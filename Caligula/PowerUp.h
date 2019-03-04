@@ -1,24 +1,23 @@
 ﻿#pragma once
 #include <SDL.h>
 #include "Config.h"
-//#include "Textures.h"
-#include "Service.h"
 #include <vector>
 #include "Block.h"
 
 class Player;
+
 class PowerUp
 {
 public:
-	PowerUp(const int indexX, const int indexY, const int type);
+	PowerUp(const int index_x, const int index_y, const int type);
 	~PowerUp() = default;
 	void render();
 	void checkCollision(const std::vector<sp<Player>>& playerList);
 	SDL_Rect m_collider = { 0,0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT };
 	bool m_is_picked_up = false;
-	int m_type;
 	int m_index_x;
 	int m_index_y;
+	int m_type;
 
 	enum PowerUpTypes
 	{

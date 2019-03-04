@@ -9,39 +9,56 @@
 #include "Bomb.h"
 #include "Block.h"
 #include "PowerUp.h"
+#include "SoundHandler.h"
 
 struct SDL_Renderer;
 class Block;
 class Sound;
+class Music;
 class Map;
 class EasyEnemy;
 class Player;
+class Bomb;
 
 class TEST_STATE_1 : public State
 {
 	SDL_Renderer* m_renderer;
-	Sound* m_bombSound;
 	sp<Map> m_map;
 	sp<Player> m_player;
 	int m_timer;
 	sp<Block> tileSet[Config::MAX_BLOCKS_X][Config::MAX_BLOCKS_Y] = {};
 	std::vector<sp<Player>> m_playerList = {};
+	std::vector<sp<Bomb>> m_bombs;
 	std::vector<sp<EasyEnemy>> m_enemyList = {};
 	std::vector<sp<PowerUp>> m_powerUps = {};
 	bool m_enemies_dead;
 	bool m_timeOut = false;
 	bool m_spawned_time_out_enemies = false;
+
+	Sound* m_playerDeathSound;
+	Sound* m_powerUpPickupSound;
+	Sound* m_bombSound;
+	Music* m_music;
 public:
 	TEST_STATE_1(SDL_Renderer& p_renderer);
 	void Enter();
+	void UpdateBombList();
+	bool isExitOpen() const;
+	bool checkLoseCondition() const;
 	bool Update();
+	void UpdateEntities();
 	void Exit();
 
-	void checkWinCondition();
+	void CheckCollisions() const;
+
+	static bool canSpawnFlame(const sp<Map> &map, int index_x, int index_y);
+
 	void spawnEnemies(int number, int enemyType);
-	sp<Block> findRandomGrassBlock();
+	Block findRandomGrassBlock();
 	void spawnEnemiesAtPosition(int x, int y, int number, int enemyType);
-	void addPowerUp(int indexX, int indexY, int powerUpType);
-	void spawnEnemiesAtStart(std::vector<sp<EasyEnemy>> m_enemyList);
+	/// void addPowerUp(int index_x, int index_y, int powerUpType);
+	void spawnEnemiesAtStart();
 	void spawnPowerUps();
+	bool hasPowerUp(int index_x, int index_y);
+
 };

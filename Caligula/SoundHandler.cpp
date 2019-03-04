@@ -1,11 +1,8 @@
-#include "SoundHandler.h"
+﻿#include "SoundHandler.h"
 #include "Sound.h"
 #include <SDL.h>
 #include <SDL_mixer.h>
-
-SoundHandler::SoundHandler()
-{
-}
+#include "Music.h"
 
 SoundHandler::~SoundHandler()
 {
@@ -41,4 +38,22 @@ Sound * SoundHandler::CreateSound(const char * p_filePath)
 	Sound* sound = new Sound((*it).second);
 	m_sounds.push_back(sound);
 	return sound;
+}
+
+Music* SoundHandler::CreateMusic(const char* p_filePath)
+{
+	auto it = m_mix_music.find(p_filePath);
+	if (it == m_mix_music.end())
+	{
+		Mix_Music* music = Mix_LoadMUS("sounds/music.mp3");
+		if (music == nullptr)
+		{
+			printf("Failed to load music! SDL_mixer Error: %s\n", Mix_GetError());
+		}
+		m_mix_music[p_filePath] = music;
+		it = m_mix_music.find(p_filePath);
+	}
+	Music* music = new Music((*it).second);
+	m_music.push_back(music);
+	return music;
 }

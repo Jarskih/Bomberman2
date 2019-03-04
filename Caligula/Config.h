@@ -35,6 +35,10 @@ struct Config
 	static const int PADDING_X = Config::BLOCK_WIDTH / 10;
 	static const int PADDING_Y = Config::BLOCK_HEIGHT / 10;
 
+	// Bomb
+	static const int BOMB_WIDTH = Config::BLOCK_WIDTH;
+	static const int BOMB_HEIGHT = Config::BLOCK_HEIGHT;
+
 	enum Blocks
 	{
 		BREAKABLE,

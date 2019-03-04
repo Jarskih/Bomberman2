@@ -1,20 +1,22 @@
-#pragma once
+﻿#pragma once
 
 #include <map>
 #include <vector>
+#include "Music.h"
 
 struct Mix_Chunk;
 class Sound;
+class Music;
 
-// TODO: Implement Music (Mix_Music, Mix_LoadMUS) etc
 class SoundHandler
 {
 	std::map<const char*, Mix_Chunk*> m_chunks;
+	std::map<const char*, Mix_Music*> m_mix_music;
 	std::vector<Sound*> m_sounds;
+	std::vector<Music*> m_music;
 public:
-	SoundHandler();
+	SoundHandler() = default;
 	~SoundHandler();
 	Sound* CreateSound(const char* p_filePath);
+	Music* CreateMusic(const char* p_filePath);
 };
-
-
