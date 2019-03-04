@@ -8,6 +8,11 @@ enum EntityType
 	BLOCK,
 	BOMB,
 	FLAME,
+	FLAME_POWER_UP,
+	BOMB_POWER_UP,
+	SPEED_POWER_UP,
+	LIFE_POWER_UP,
+	EXIT_POWER_UP,
 };
 //  Base Class for all entity types
 class Sprite;

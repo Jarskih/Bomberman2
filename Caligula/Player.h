@@ -5,7 +5,9 @@
 #include "Helpers.h"
 #include "Config.h"
 #include "Block.h"
+#include "PowerUp.h"
 
+class Enemy;
 class SpriteSheet;
 class Bomb;
 
@@ -20,6 +22,8 @@ public:
 	void Update(int bombs);
 	void Render(SDL_Renderer* p_renderer) override;
 	void OnCollision(Entity* p_other) override;
+	void OnCollision(sp<PowerUp> const &p_other);
+	void OnCollision(sp<Enemy> const &p_other);
 	void Die();
 	sp<Bomb> DropBomb();
 	bool IsDropBombPressed();

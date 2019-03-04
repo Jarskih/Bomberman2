@@ -6,6 +6,7 @@
 #include <iostream>
 #include "InputHandler.h"
 #include "Bomb.h"
+#include "Musicplayer.h"
 
 Player::Player(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
 	int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH,
@@ -172,6 +173,42 @@ void Player::OnCollision(Entity* p_other)
 
 		m_collider->SetPosition(m_x + Config::PLAYER_WIDTH / 3, m_y + Config::PLAYER_HEIGHT / 2);
 	}
+}
+
+void Player::OnCollision(sp<PowerUp> const &p_other)
+{
+	switch (p_other->GetType())
+	{
+	case FLAME_POWER_UP:
+		MusicPlayer::PlaySoundFromPath("sounds/bonus_pickup.wav");
+		m_flame_power++;
+		//m_score += p_other.GetScore();
+		break;
+	case BOMB_POWER_UP:
+		m_max_bombs++;
+		//m_score += p_other.GetScore();
+		break;
+	case SPEED_POWER_UP:
+		MusicPlayer::PlaySoundFromPath("sounds/bonus_pickup.wav");
+		m_speed++;
+		//m_score += p_other.GetScore();
+		break;
+	case LIFE_POWER_UP:
+		MusicPlayer::PlaySoundFromPath("sounds/bonus_pickup.wav");
+		m_lives++;
+		//m_score += p_other.GetScore();
+		break;
+	case EXIT_POWER_UP:
+
+		break;
+	default:
+		break;
+	}
+}
+
+void Player::OnCollision(sp<Enemy> const &p_other)
+{
+	Die();
 };
 
 void Player::Die()

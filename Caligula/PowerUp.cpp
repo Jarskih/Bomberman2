@@ -1,20 +1,25 @@
 ﻿#include "PowerUp.h"
 #include "Map.h"
+#include "Collider.h"
 
 PowerUp::PowerUp(const int index_x, const int index_y, const int type) : m_index_x(index_x), m_index_y(index_y),
 m_type(type)
 {
 	const auto blockCenter = Helpers::GetBlockCenter(m_index_x, m_index_y);
-	m_collider.x = blockCenter.first;
-	m_collider.y = blockCenter.second;
+	m_collider = new RectangleCollider(blockCenter.first, blockCenter.second, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT);
 	m_pos_x = blockCenter.first;
 	m_pos_y = blockCenter.second;
 	m_window_rect.x = blockCenter.first;
 	m_window_rect.y = blockCenter.second;
 }
 
-void PowerUp::render()
+void PowerUp::Update()
 {
+}
+
+void PowerUp::Render(SDL_Renderer* p_renderer)
+{
+	/*
 	if (m_is_picked_up) {
 		return;
 	}
@@ -37,7 +42,6 @@ void PowerUp::render()
 	{
 		m_frame = (SDL_GetTicks() / delayPerFrame) % m_total_frames;
 	}
-	*/
 
 	m_texture_rect.y = m_frame * m_texture_rect.h;
 	SDL_QueryTexture(m_texture, nullptr, nullptr, &m_texture_rect.w, &m_texture_rect.h);
@@ -47,6 +51,8 @@ void PowerUp::render()
 	m_texture_rect.x = m_type * m_texture_rect.w;
 
 	SDL_RenderCopy(m_renderer, m_texture, &m_texture_rect, &m_window_rect);
+
+	*/
 }
 
 void PowerUp::checkCollision(const std::vector<sp<Player>>& m_playerList)
@@ -99,4 +105,9 @@ void PowerUp::checkCollision(const std::vector<sp<Player>>& m_playerList)
 		}
 	}
 	*/
+}
+
+void PowerUp::OnCollision(Entity* other)
+{
+
 }

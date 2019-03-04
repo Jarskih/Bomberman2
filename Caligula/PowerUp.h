@@ -6,14 +6,15 @@
 
 class Player;
 
-class PowerUp
+class PowerUp : public Entity
 {
 public:
 	PowerUp(const int index_x, const int index_y, const int type);
 	~PowerUp() = default;
-	void render();
+	void Update() override;
+	void Render(SDL_Renderer* p_renderer) override;
 	void checkCollision(const std::vector<sp<Player>>& playerList);
-	SDL_Rect m_collider = { 0,0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT };
+	void OnCollision(Entity* other) override;
 	bool m_is_picked_up = false;
 	int m_index_x;
 	int m_index_y;
@@ -28,6 +29,7 @@ public:
 		EXIT
 	};
 private:
+	Collider* m_collider;
 	SDL_Texture* m_texture;
 	SDL_Renderer* m_renderer;
 	SDL_Rect m_window_rect = { 0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT };

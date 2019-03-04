@@ -50,6 +50,7 @@ public:
 	void Exit();
 
 	void CheckCollisions() const;
+	bool checkWinCondition();
 
 	static bool canSpawnFlame(const sp<Map> &map, int index_x, int index_y);
 

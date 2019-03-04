@@ -28,6 +28,7 @@ void TEST_STATE_1::Enter()
 		Config::PLAYER_STARTING_POS_X, Config::PLAYER_STARTING_POS_Y,
 		Config::STARTING_LIVES);
 	spawnPowerUps();
+	spawnEnemies(4, EASY_ENEMY);
 
 	std::cout << "GameState::Enter: Finished creating level and spawned entities" << std::endl;
 
@@ -41,8 +42,10 @@ bool TEST_STATE_1::Update()
 		m_nextState = "LOSE_STATE";
 		return false;
 	}
-	if (isExitOpen())
+	if (checkWinCondition())
 	{
+		m_nextState = "WIN_STATE";
+		return false;
 		// TODO change exit animation and status
 	}
 
@@ -168,8 +171,25 @@ void TEST_STATE_1::CheckCollisions() const
 			}
 		}
 	}
+	/*
+	for (const auto powerUp : m_powerUps)
+	{
+		if (Service<CollisionHandler>::Get()->IsColliding(m_player->GetCollider(), powerUp->GetCollider()))
+		{
+			m_player->OnCollision(powerUp);
+		}
+	}
+	*/
 }
 
+bool TEST_STATE_1::checkWinCondition()
+{
+	if (isExitOpen())
+	{
+
+	}
+	return false;
+}
 
 bool TEST_STATE_1::isExitOpen() const
 {
@@ -202,7 +222,7 @@ Block TEST_STATE_1::findRandomGrassBlock()
 		const int x = Helpers::RandomNumber(Config::MAX_BLOCKS_X - 1);
 		const int y = Helpers::RandomNumber(Config::MAX_BLOCKS_Y - 1);
 
-		const auto block = tileSet[x][y];
+		const auto block = m_map->findBlockByIndex(x, y);
 		if (block->GetBlockType() == Config::GRASS)
 		{
 			return *block;
@@ -227,7 +247,7 @@ void TEST_STATE_1::spawnEnemiesAtStart()
 				continue;
 			}
 
-			const auto block = tileSet[x][y];
+			const auto block = m_map->findBlockByIndex(x, y);
 			if (block->GetBlockType() == Config::GRASS)
 			{
 				const auto enemyObject = makesp<EasyEnemy>(EASY_ENEMY, x, y);
