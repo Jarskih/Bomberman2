@@ -19,9 +19,6 @@
 #include "FSM.h"
 #include "TEST_STATE_1.h"
 
-
-
-
 int main(int ac, char** av)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)

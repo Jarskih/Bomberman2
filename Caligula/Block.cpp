@@ -133,9 +133,9 @@ int Block::GetBlockType() const
 	return m_block_type;
 }
 
-void Block::SetParent(sp<Block> block)
+void Block::SetParent(Block& block)
 {
-	m_parent = block;
+	m_parent = &block;
 }
 
 bool Block::HasPowerUp() const
@@ -149,7 +149,7 @@ void Block::SpawnPowerUp(int powerUpType)
 	m_power_up_type = powerUpType;
 }
 
-sp<Block> Block::GetParent() const
+Block* Block::GetParent() const
 {
 	return m_parent;
 }

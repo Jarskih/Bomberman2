@@ -10,9 +10,11 @@ class Block;
  * No optimizations.
  */
 
-namespace Pathfinding {
-	std::list<sp<Block>> discoverNeighbors(sp<Block> &block);
-	int getDistance(sp<Block> &target, sp<Block> &start);
-	std::list<sp<Block>> retracePath(sp<Block> &start, sp<Block> &end);
-	std::list<sp<Block>> calculatePath(sp<Block> &target, sp<Block> &start);
-}
+class Pathfinding {
+public:
+	std::list<Block*> calculatePath(Block &target, Block &start);
+private:
+	std::list<Block*> discoverNeighbors(Block &block);
+	int getDistance(Block &target, Block &start);
+	std::list<Block*> retracePath(Block &start, Block &end);
+};

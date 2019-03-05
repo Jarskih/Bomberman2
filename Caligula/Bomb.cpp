@@ -34,18 +34,6 @@ void Bomb::Update()
 {
 }
 
-bool Bomb::ShouldExplode()
-{
-	const Uint32 currentTime = SDL_GetTicks() - m_timeDropped;
-	const Uint32 timeSpent = currentTime - m_oldTime;
-	if (timeSpent > bombTimer || hitFlame)
-	{
-		return true;
-	}
-	m_oldTime = timeSpent;
-	return false;
-}
-
 void Bomb::Render(SDL_Renderer* p_renderer)
 {
 	const int m_frame = (SDL_GetTicks() / m_delay_per_frame) % m_spriteSheet->GetTotalFrames();
@@ -57,4 +45,17 @@ void Bomb::Render(SDL_Renderer* p_renderer)
 
 	SDL_SetRenderDrawColor(p_renderer, 255, 255, 255, 0);
 	SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
+}
+
+
+bool Bomb::ShouldExplode()
+{
+	const Uint32 currentTime = SDL_GetTicks() - m_timeDropped;
+	const Uint32 timeSpent = currentTime - m_oldTime;
+	if (timeSpent > bombTimer || hitFlame)
+	{
+		return true;
+	}
+	m_oldTime = timeSpent;
+	return false;
 }

@@ -2,7 +2,7 @@
 #include "Map.h"
 #include "Collider.h"
 
-PowerUp::PowerUp(const int index_x, const int index_y, const int type) : m_index_x(index_x), m_index_y(index_y),
+PowerUp::PowerUp(int index_x, int index_y, int type) : m_index_x(index_x), m_index_y(index_y),
 m_type(type)
 {
 	const auto blockCenter = Helpers::GetBlockCenter(m_index_x, m_index_y);
@@ -54,10 +54,10 @@ void PowerUp::Render(SDL_Renderer* p_renderer)
 
 	*/
 }
-
-void PowerUp::checkCollision(const std::vector<sp<Player>>& m_playerList)
+/*
+void PowerUp::checkCollision(const std::vector<up<Player>>& m_playerList)
 {
-	/*
+
 	if (!m_is_picked_up) {
 		for (const auto& player : m_playerList)
 		{
@@ -104,9 +104,9 @@ void PowerUp::checkCollision(const std::vector<sp<Player>>& m_playerList)
 			}
 		}
 	}
-	*/
-}
 
+}
+	*/
 void PowerUp::OnCollision(Entity* other)
 {
 

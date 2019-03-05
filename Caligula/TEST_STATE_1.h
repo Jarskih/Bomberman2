@@ -10,6 +10,7 @@
 #include "Block.h"
 #include "PowerUp.h"
 #include "SoundHandler.h"
+#include "Player.h"
 
 struct SDL_Renderer;
 class Block;
@@ -23,14 +24,14 @@ class Bomb;
 class TEST_STATE_1 : public State
 {
 	SDL_Renderer* m_renderer;
-	sp<Map> m_map;
-	sp<Player> m_player;
+	up<Map> m_map;
+	up<Player> m_player;
 	int m_timer;
-	sp<Block> tileSet[Config::MAX_BLOCKS_X][Config::MAX_BLOCKS_Y] = {};
-	std::vector<sp<Player>> m_playerList = {};
-	std::vector<sp<Bomb>> m_bombs;
-	std::vector<sp<EasyEnemy>> m_enemyList = {};
-	std::vector<sp<PowerUp>> m_powerUps = {};
+	up<Block> tileSet[Config::MAX_BLOCKS_X][Config::MAX_BLOCKS_Y] = {};
+	std::vector<up<Player>> m_playerList = {};
+	std::vector<Bomb*> m_bombs;
+	std::vector<up<EasyEnemy>> m_enemyList = {};
+	std::vector<up<PowerUp>> m_powerUps = {};
 	bool m_enemies_dead;
 	bool m_timeOut = false;
 	bool m_spawned_time_out_enemies = false;

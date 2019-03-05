@@ -20,15 +20,12 @@ public:
 	Bomb(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
 		int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH,
 		int p_x, int p_y, int flamePower);;
-
 	~Bomb();
+	void Update() override;
+	void Render(SDL_Renderer* renderer) override;
+	bool ShouldExplode();
 
 	bool isExploded = false;
-
-	void Update() override;
-	bool ShouldExplode();
-	void Render(SDL_Renderer* renderer) override;
-	void load_textures(SDL_Renderer* renderer, const std::string &sprite);
 	SDL_Rect collider = { 0,0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT };
 	bool hitFlame = false;
 	bool firstCollision = true;
@@ -52,6 +49,4 @@ private:
 	Uint32 m_oldTime = 0;
 	SDL_Rect windowRect;
 	SDL_Rect textureRect;
-
-
 };

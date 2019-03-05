@@ -25,7 +25,9 @@ public:
 	void OnCollision(sp<PowerUp> const &p_other);
 	void OnCollision(sp<Enemy> const &p_other);
 	void Die();
-	sp<Bomb> DropBomb();
+	int GetFlamePower() const;
+	Bomb* DropBomb();
+	bool CanDropBomb();
 	bool IsDropBombPressed();
 private:
 	enum States { IDLE_UP, IDLE_DOWN, IDLE_LEFT, IDLE_RIGHT, DOWN, UP, LEFT, RIGHT, DEAD };
@@ -45,7 +47,7 @@ private:
 	int m_lives;
 	int m_speed_x;
 	int m_speed_y;
-	std::vector<sp<Bomb>> m_bombs = {};
+	std::vector<up<Bomb>> m_bombs = {};
 	bool m_moving = false;
 	int m_speed = 3;
 

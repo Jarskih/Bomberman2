@@ -12,14 +12,14 @@ class EasyEnemy : public Entity
 {
 public:
 	EasyEnemy(const EntityType enemy_type, const int index_x, const int index_y);;
-	void Update();
-	void Render(SDL_Renderer* p_renderer);
+	void Update() override;
+	void Render(SDL_Renderer* p_renderer) override;
 	void smartMove();
 	void die();
 private:
-	sp<Block> m_next_block;
-	sp<Block> target_block;
-	sp<Block>current_block;
+	up<Block> m_next_block;
+	up<Block> target_block;
+	up<Block> current_block;
 
 
 	int m_speed_x;

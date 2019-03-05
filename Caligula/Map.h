@@ -7,26 +7,20 @@
 #include "Bomb.h"
 #include "EasyEnemy.h"
 #include "Block.h"
-//#include "PowerUp.h"
+#include "Pathfinding.h"
 
-/*
- * Using flyweight pattern for blocks so we only need to store one of each type of block in memory
- *
- */
+//#include "PowerUp.h"
 
 class Map
 {
 public:
-	Map() = delete;
-
-	Map(int level, std::vector<sp<EasyEnemy>> enemyList);
-	~Map() = default;
+	Map(int level);
 	void Update();
 	void Render(SDL_Renderer* p_renderer);
 	void handleEvent(SDL_Event& event);
 
-	sp<Block> findBlockByCoordinates(int x, int y);
-	sp<Block> findBlockByIndex(int x, int y);
+	Block findBlockByCoordinates(int x, int y);
+	Block findBlockByIndex(int x, int y);
 
 	int m_score = 0;
 	int m_players = 1;
@@ -35,7 +29,8 @@ public:
 private:
 	void generateMap(int level);
 	const char* GetSpritePath(int blockType);
-	sp<Block> tileSet[Config::MAX_BLOCKS_X][Config::MAX_BLOCKS_Y] = {};
+	up<Block> tileSet[Config::MAX_BLOCKS_X][Config::MAX_BLOCKS_Y] = {};
+	Pathfinding pathfinder;
 
 	int m_size_x = Config::MAX_BLOCKS_X;
 	int m_size_y = Config::MAX_BLOCKS_Y;

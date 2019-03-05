@@ -5,7 +5,7 @@
 #include "State.h"
 #include "Player.h"
 
-Map::Map(int level, std::vector<sp<EasyEnemy>> enemyList)
+Map::Map(int level)
 {
 	generateMap(level);
 }
@@ -18,8 +18,8 @@ void Map::Render(SDL_Renderer* p_renderer)
 {
 	for (int y = 0; y < m_size_y; y++) {
 		for (int x = 0; x < m_size_x; x++) {
-			auto block = tileSet[x][y];
-			block->Render(p_renderer);
+			auto block = *tileSet[x][y];
+			block.Render(p_renderer);
 		}
 	}
 }
@@ -74,12 +74,11 @@ void Map::generateMap(int level)
 				{
 					hasCollider = false;
 				}
-				const sp<Block> block = makesp<Block>(GetSpritePath(blockType),
+				tileSet[x][y] = makeunique<Block>(GetSpritePath(blockType),
 					0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT,
 					0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT,
 					posX, posY,
 					blockType, hasCollider);
-				tileSet[x][y] = block;
 			}
 		}
 	}
@@ -142,19 +141,19 @@ void Map::handleEvent(SDL_Event& event)
 }
 
 // Get block object from coordinates
-sp<Block> Map::findBlockByCoordinates(const int x, const int y)
+Block Map::findBlockByCoordinates(const int x, const int y)
 {
 	const auto block = Helpers::GetCurrentBlock(x, y);
 	return findBlockByIndex(block.first, block.second);
 }
 
-sp<Block> Map::findBlockByIndex(const int x, const int y)
+Block Map::findBlockByIndex(const int x, const int y)
 {
 	if (x >= 0 && y >= 0 && x < Config::MAX_BLOCKS_X && y < Config::MAX_BLOCKS_Y) {
-		return tileSet[x][y];
+		return *tileSet[x][y];
 	}
 	else
 	{
-		return tileSet[0][0];
+		return *tileSet[0][0];
 	}
 }

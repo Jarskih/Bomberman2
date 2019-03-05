@@ -9,6 +9,7 @@
 #include "Config.h"
 #include "Map.h"
 #include "Player.h"
+#include "Bomb.h"
 
 TEST_STATE_1::TEST_STATE_1(SDL_Renderer& p_renderer) : m_renderer(&p_renderer)
 {
@@ -22,11 +23,14 @@ void TEST_STATE_1::Enter()
 {
 	std::cout << "GameState::Enter: Creating level" << std::endl;
 
-	m_map = makesp<Map>(1, m_enemyList);
-	m_player = makesp<Player>(0, 0, Config::PLAYER_WIDTH, Config::PLAYER_HEIGHT,
+	m_map = makeunique<Map>(1);
+	Service<up<Map>>::Set(&m_map);
+
+	m_player = makeunique<Player>(0, 0, Config::PLAYER_WIDTH, Config::PLAYER_HEIGHT,
 		Config::PLAYER_COLLIDER_X, Config::PLAYER_COLLIDER_Y, Config::PLAYER_COLLIDER_WIDTH, Config::PLAYER_COLLIDER_HEIGHT,
 		Config::PLAYER_STARTING_POS_X, Config::PLAYER_STARTING_POS_Y,
 		Config::STARTING_LIVES);
+
 	spawnPowerUps();
 	spawnEnemies(4, EASY_ENEMY);
 
@@ -56,20 +60,24 @@ bool TEST_STATE_1::Update()
 	{
 		if (m_player->IsDropBombPressed())
 		{
-			auto bomb = m_player->DropBomb();
-			if (bomb != nullptr)
+			if (m_player->CanDropBomb())
 			{
-				m_bombs.emplace_back(bomb);
+				const std::pair<int, int> currentBlockIndex = Helpers::GetCurrentBlock(m_player->GetPositionX() + Config::BLOCK_WIDTH, m_player->GetPositionY() + Config::BLOCK_HEIGHT);
+				std::pair<int, int> blockCenter = Helpers::GetBlockCenter(currentBlockIndex.first, currentBlockIndex.second);
+
+				m_bombs.push_back(new Bomb(0, 0, Config::BOMB_WIDTH, Config::BOMB_HEIGHT,
+					Config::BOMB_WIDTH, Config::BOMB_HEIGHT, Config::BOMB_WIDTH, Config::BOMB_HEIGHT,
+					blockCenter.first, blockCenter.second, m_player->GetFlamePower()));
 			}
 		}
 	}
 
 	m_map->Render(m_renderer);
-	m_player->Render(m_renderer);
 	for (const auto &bomb : m_bombs)
 	{
 		bomb->Render(m_renderer);
 	}
+	m_player->Render(m_renderer);
 
 	m_timer++;
 
@@ -133,13 +141,17 @@ void TEST_STATE_1::Exit()
 
 void TEST_STATE_1::UpdateBombList()
 {
-	std::vector<sp<Bomb>> newBombList;
+	std::vector<Bomb*> newBombList;
 
-	for (const auto &bomb : m_bombs)
+	for (auto &bomb : m_bombs)
 	{
 		if (!bomb->ShouldExplode())
 		{
 			newBombList.emplace_back(bomb);
+		}
+		else
+		{
+			delete bomb;
 		}
 	}
 	m_bombs = newBombList;
@@ -164,7 +176,7 @@ void TEST_STATE_1::CheckCollisions() const
 	{
 		for (int y = 0; y < Config::MAX_BLOCKS_Y; y++)
 		{
-			Block block = *m_map->findBlockByIndex(x, y);
+			Block block = m_map->findBlockByIndex(x, y);
 			if (Service<CollisionHandler>::Get()->IsColliding(m_player->GetCollider(), block.GetCollider()))
 			{
 				m_player->OnCollision(&block);
@@ -201,8 +213,7 @@ void TEST_STATE_1::spawnEnemies(int number, int enemyType)
 	for (auto numberOfEnemies = 0; numberOfEnemies < number; numberOfEnemies++)
 	{
 		const auto block = findRandomGrassBlock();
-		const auto enemyObject = makesp<EasyEnemy>(HARD_ENEMY, block.GetIndexX(), block.GetIndexY());
-		m_enemyList.push_back(enemyObject);
+		m_enemyList.push_back(makeunique<EasyEnemy>(HARD_ENEMY, block.GetIndexX(), block.GetIndexY()));
 	}
 }
 
@@ -210,8 +221,7 @@ void TEST_STATE_1::spawnEnemiesAtPosition(int x, int y, int number, int enemyTyp
 {
 	for (auto numberOfEnemies = 0; numberOfEnemies < number; numberOfEnemies++)
 	{
-		const auto enemyObject = makesp<EasyEnemy>(HARD_ENEMY, x, y);
-		m_enemyList.push_back(enemyObject);
+		m_enemyList.push_back(makeunique<EasyEnemy>(HARD_ENEMY, x, y));
 	}
 }
 
@@ -223,9 +233,9 @@ Block TEST_STATE_1::findRandomGrassBlock()
 		const int y = Helpers::RandomNumber(Config::MAX_BLOCKS_Y - 1);
 
 		const auto block = m_map->findBlockByIndex(x, y);
-		if (block->GetBlockType() == Config::GRASS)
+		if (block.GetBlockType() == Config::GRASS)
 		{
-			return *block;
+			return block;
 		}
 	}
 }
@@ -248,10 +258,9 @@ void TEST_STATE_1::spawnEnemiesAtStart()
 			}
 
 			const auto block = m_map->findBlockByIndex(x, y);
-			if (block->GetBlockType() == Config::GRASS)
+			if (block.GetBlockType() == Config::GRASS)
 			{
-				const auto enemyObject = makesp<EasyEnemy>(EASY_ENEMY, x, y);
-				m_enemyList.push_back(enemyObject);
+				m_enemyList.push_back(makeunique<EasyEnemy>(EASY_ENEMY, x, y));
 				allowedBlock = true;
 				break;
 			}
@@ -280,9 +289,8 @@ void TEST_STATE_1::spawnPowerUps()
 			x = Helpers::RandomNumber(Config::MAX_BLOCKS_X - 1);
 			y = Helpers::RandomNumber(Config::MAX_BLOCKS_Y - 1);
 
-			if (m_map->findBlockByIndex(x, y)->GetBlockType() == Config::BREAKABLE && !hasPowerUp(x, y)) {
-				auto powerUp = makesp<PowerUp>(x, y, powerUpType);
-				m_powerUps.emplace_back(powerUp);
+			if (m_map->findBlockByIndex(x, y).GetBlockType() == Config::BREAKABLE && !hasPowerUp(x, y)) {
+				m_powerUps.emplace_back(makeunique<PowerUp>(x, y, powerUpType));
 				allowedBlock = true;
 				break;
 			}
@@ -423,7 +431,7 @@ void TEST_STATE_1::renderFlames(SDL_Renderer* renderer, int frames)
 bool TEST_STATE_1::canSpawnFlame(const sp<Map> &map, const int x, const int y)
 {
 	bool allowed = false;
-	switch (map->findBlockByIndex(x, y)->GetBlockType()) {
+	switch (map->findBlockByIndex(x, y).GetBlockType()) {
 	case Config::GRASS:
 		allowed = true;
 		break;

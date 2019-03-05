@@ -223,15 +223,14 @@ void Player::Die()
 	}
 }
 
-sp<Bomb> Player::DropBomb() {
-	if (m_max_bombs > m_bombs_dropped)
-	{
-		const std::pair<int, int> currentBlockIndex = Helpers::GetCurrentBlock(m_x + Config::BLOCK_WIDTH, m_y + Config::BLOCK_HEIGHT);
-		std::pair<int, int> blockCenter = Helpers::GetBlockCenter(currentBlockIndex.first, currentBlockIndex.second);
-		return makesp<Bomb>(0, 0, Config::BOMB_WIDTH, Config::BOMB_HEIGHT,
-			Config::BOMB_WIDTH, Config::BOMB_HEIGHT, Config::BOMB_WIDTH, Config::BOMB_HEIGHT, blockCenter.first, blockCenter.second, m_flame_power);
-	}
-	return nullptr;
+int Player::GetFlamePower() const
+{
+	return m_flame_power;
+}
+
+bool Player::CanDropBomb()
+{
+	return m_max_bombs > m_bombs_dropped;
 }
 
 bool Player::IsDropBombPressed()

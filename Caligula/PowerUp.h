@@ -9,11 +9,10 @@ class Player;
 class PowerUp : public Entity
 {
 public:
-	PowerUp(const int index_x, const int index_y, const int type);
-	~PowerUp() = default;
+	PowerUp(int index_x, int index_y, int type);
 	void Update() override;
 	void Render(SDL_Renderer* p_renderer) override;
-	void checkCollision(const std::vector<sp<Player>>& playerList);
+	//void checkCollision(const std::vector<up<Player>>& playerList);
 	void OnCollision(Entity* other) override;
 	bool m_is_picked_up = false;
 	int m_index_x;
