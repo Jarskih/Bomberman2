@@ -5,6 +5,7 @@
 #include "Config.h"
 #include "Block.h"
 #include <iostream>
+#include "Flame.h"
 
 Block::Block(const char* p_textureFilePath, int p_srcX, int p_srcY, int p_srcW, int p_srcH, int p_colliderX,
 	int p_colliderY, int p_colliderW, int p_colliderH, int p_x, int p_y, int p_block_type, bool p_has_collider)
@@ -33,6 +34,11 @@ Block::Block(const char* p_textureFilePath, int p_srcX, int p_srcY, int p_srcW, 
 	}
 }
 
+Block::~Block()
+{
+	m_collider = nullptr;
+}
+
 void Block::Render(SDL_Renderer* p_renderer)
 {
 	if (m_block_type == Config::Blocks::GRASS)
@@ -52,52 +58,6 @@ void Block::Render(SDL_Renderer* p_renderer)
 		SDL_Rect dst = { m_x, m_y, m_sprite->GetArea().w, m_sprite->GetArea().h };
 		SDL_RenderCopy(p_renderer, m_sprite->GetTexture(), &m_sprite->GetArea(), &dst);
 	}
-
-	SDL_SetRenderDrawColor(p_renderer, 0, 0, 255, 0);
-	SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
-
-	/*
-	if (m_old_block_type != m_block_type)
-	{
-		//LoadTexture();
-		m_old_block_type = m_block_type;
-	}
-
-	m_window_rect.x = m_x;
-	m_window_rect.y = m_y;
-	m_collider.x = m_x;
-	m_collider.y = m_y;
-
-	const int totalFrames = 7;
-	if (m_block_type == Config::DESTROYED)
-	{
-		if (m_block_has_power_up && !m_power_up_added) {
-			auto map = Service<Map>::Get();
-			map->addPowerUp(m_index_x, m_index_y, m_power_up_type);
-			m_power_up_added = true;
-		}
-
-		const int delayPerFrame = 100;
-
-		if (SDL_GetTicks() - timeExploded > delayPerFrame)
-		{
-			m_texture_rect.y = m_frame * m_texture_rect.h;
-			SDL_QueryTexture(m_texture, nullptr, nullptr, &m_texture_rect.w, &m_texture_rect.h);
-
-			m_texture_rect.h /= totalFrames;
-			m_frame++;
-		}
-		if (m_frame >= totalFrames - 1)
-		{
-			changeBlockType(Config::GRASS);
-		}
-		SDL_RenderCopy(p_renderer, m_texture, &m_texture_rect, &m_window_rect);
-	}
-	else
-	{
-		SDL_RenderCopy(p_renderer, m_texture, nullptr, &m_window_rect);
-	}
-	*/
 }
 
 void Block::Update()
@@ -114,9 +74,9 @@ std::pair<int, int> Block::getBlockIndex() const
 	return Helpers::GetCurrentBlock(m_x, m_y);
 }
 
-void Block::OnCollision(Entity* p_other)
+void Block::OnCollision(sp<Flame> &flame)
 {
-	if (p_other->GetType() == FLAME)
+	if (flame->GetType() == FLAME)
 	{
 		setDestroyed();
 	}

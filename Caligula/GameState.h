@@ -35,25 +35,21 @@ class GameState : public State
 	std::vector<sp<EasyEnemy>> m_enemyList = {};
 	std::vector<sp<PowerUp>> m_powerUps = {};
 	std::vector<sp<Flame>> m_flames = {};
-	bool m_enemies_dead;
-	bool m_timeOut = false;
-	bool m_spawned_time_out_enemies = false;
 
-	Sound* m_playerDeathSound;
-	Sound* m_powerUpPickupSound;
-	Sound* m_bombSound;
 	Music* m_music;
 	int m_level;
 public:
 	GameState(SDL_Renderer& p_renderer);
-	void Enter();
+	void Enter() override;
 	void UpdateBombList();
+	void UpdateEnemyList();
+	void UpdatePowerUpList();
 	bool isExitOpen() const;
 	bool checkLoseCondition() const;
-	bool Update();
+	bool Update() override;
 	void UpdateEntities();
 	void UpdateFlameList();
-	void Exit();
+	void Exit() override;
 
 	void CheckCollisions() const;
 	bool checkWinCondition();

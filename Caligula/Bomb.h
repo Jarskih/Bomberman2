@@ -21,6 +21,8 @@ public:
 	void Render(SDL_Renderer* renderer) override;
 	bool ShouldExplode();
 	int GetFlamePower() const;
+	int GetPositionX() const;;
+	int GetPositionY() const;;
 private:
 	int m_srcX;
 	int	m_srcY;
@@ -35,11 +37,11 @@ private:
 	bool hitFlame;
 	Animator animator;
 	Sound* m_bombSound;
-	SDL_Rect m_window_rect = { 0, 0, Config::BOMB_WIDTH, Config::BOMB_HEIGHT };
-	int m_delay_per_frame = 200;
+	int m_delay_per_frame;
 	int m_timeDropped;
-	int bombTimer = 1500;
-	int m_oldTime = 0;
-	SDL_Rect windowRect{};
-	SDL_Rect textureRect{};
+	int bombTimer;
+	int m_oldTime;
+	int m_currentTime;
+	int m_timeSpent;
+	SDL_Rect m_window_rect;
 };

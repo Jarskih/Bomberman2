@@ -15,8 +15,6 @@
 GameState::GameState(SDL_Renderer& p_renderer) : m_renderer(&p_renderer)
 {
 	m_music = Service<SoundHandler>::Get()->CreateMusic("sounds/music.mp3");
-	m_playerDeathSound = Service<SoundHandler>::Get()->CreateSound("sounds/player_death.wav");
-	m_powerUpPickupSound = Service<SoundHandler>::Get()->CreateSound("sounds/bonus_pickup.wav");
 	m_name = "GAME_STATE";
 	m_level = 1;
 }
@@ -87,12 +85,10 @@ bool GameState::Update()
 		enemy->Render(m_renderer);
 	}
 
-	/* TODO power ups
 	for (const auto &powerUp : m_powerUps)
 	{
 		powerUp->Render(m_renderer);
 	}
-	*/
 
 	for (const auto &flame : m_flames)
 	{
@@ -116,26 +112,6 @@ void GameState::Exit()
 	m_flames.clear();
 }
 
-void GameState::UpdateBombList()
-{
-	std::vector<sp<Bomb>> newBombList;
-
-	for (const auto &bomb : m_bombs)
-	{
-		if (!bomb->ShouldExplode())
-		{
-			newBombList.emplace_back(bomb);
-		}
-		else
-		{
-			auto currentBlock = Helpers::GetCurrentBlock(bomb->GetPositionX(), bomb->GetPositionY());
-			auto blockCenter = Helpers::GetBlockCenter(currentBlock.first, currentBlock.second);
-			SpawnFlames(blockCenter.first, blockCenter.second, bomb->GetFlamePower());
-		}
-	}
-	m_bombs = newBombList;
-}
-
 bool GameState::checkLoseCondition() const
 {
 	return !m_player->IsActive();
@@ -143,6 +119,11 @@ bool GameState::checkLoseCondition() const
 
 void GameState::UpdateEntities()
 {
+	if (isExitOpen())
+	{
+		m_player->AbleToExit(true);
+	}
+
 	m_map->Update();
 
 	for (const auto& enemy : m_enemyList)
@@ -169,18 +150,20 @@ void GameState::UpdateEntities()
 		}
 	}
 
-	for (const auto& powerUp : m_powerUps)
+	for (const auto& bomb : m_bombs)
 	{
-		if (powerUp->IsActive())
+		if (bomb->IsActive())
 		{
-			powerUp->Update();
+			bomb->Update();
 		}
 	}
 
 	m_player->Update(static_cast<int>(m_bombs.size()));
 
-	UpdateBombList();
 	UpdateFlameList();
+	UpdateBombList();
+	UpdateEnemyList();
+	UpdatePowerUpList();
 }
 
 void GameState::UpdateFlameList()
@@ -197,10 +180,56 @@ void GameState::UpdateFlameList()
 	m_flames = newFlameList;
 }
 
+void GameState::UpdateBombList()
+{
+	std::vector<sp<Bomb>> newBombList;
+
+	for (const auto &bomb : m_bombs)
+	{
+		if (bomb->IsActive())
+		{
+			newBombList.emplace_back(bomb);
+		}
+		else
+		{
+			auto currentBlock = Helpers::GetCurrentBlock(bomb->GetPositionX(), bomb->GetPositionY());
+			auto blockCenter = Helpers::GetBlockCenter(currentBlock.first, currentBlock.second);
+			SpawnFlames(blockCenter.first, blockCenter.second, bomb->GetFlamePower());
+		}
+	}
+	m_bombs = newBombList;
+}
+
+void GameState::UpdateEnemyList()
+{
+	std::vector<sp<EasyEnemy>> newEnemyList;
+
+	for (const auto &enemy : m_enemyList)
+	{
+		if (enemy->IsActive())
+		{
+			newEnemyList.emplace_back(enemy);
+		}
+	}
+	m_enemyList = newEnemyList;
+}
+
+void  GameState::UpdatePowerUpList()
+{
+	std::vector<sp<PowerUp>> newPowerUpList;
+
+	for (const auto &powerUp : m_powerUps)
+	{
+		if (powerUp->IsActive())
+		{
+			newPowerUpList.emplace_back(powerUp);
+		}
+	}
+	m_powerUps = newPowerUpList;
+}
+
 void GameState::CheckCollisions() const
 {
-	// TODO BOMB collisions, enemy flame collision
-
 	// Blocks
 	for (int x = 0; x < Config::MAX_BLOCKS_X; x++)
 	{
@@ -208,13 +237,9 @@ void GameState::CheckCollisions() const
 		{
 			auto block = m_map->findBlockByIndex(x, y);
 			// Player
-			{
-				auto col = block->GetCollider();
-			}
 			if (Service<CollisionHandler>::Get()->IsColliding(m_player->GetCollider(), block->GetCollider()))
 			{
-				auto blockRef = *m_map->findBlockByIndex(x, y);
-				m_player->OnCollision(&blockRef);
+				m_player->OnCollision(block);
 			}
 
 			// Enemies
@@ -222,20 +247,18 @@ void GameState::CheckCollisions() const
 			{
 				if (Service<CollisionHandler>::Get()->IsColliding(enemy->GetCollider(), block->GetCollider()))
 				{
-					auto blockRef = *m_map->findBlockByIndex(x, y);
-					enemy->OnCollision(&blockRef);
+					enemy->OnCollision(block);
 				}
 			}
 
 			// Flames
-			for (const auto &flame : m_flames)
+			for (auto flame : m_flames)
 			{
 				if (block->GetBlockType() == Config::Blocks::BREAKABLE)
 				{
 					if (Service<CollisionHandler>::Get()->IsColliding(flame->GetCollider(), block->GetCollider()))
 					{
-						auto flameRef = *flame;
-						block->OnCollision(&flameRef);
+						block->OnCollision(flame);
 					}
 				}
 			}
@@ -243,24 +266,20 @@ void GameState::CheckCollisions() const
 	}
 
 	// Enemies
-	for (const auto &enemy : m_enemyList)
+	for (auto enemy : m_enemyList)
 	{
 		if (Service<CollisionHandler>::Get()->IsColliding(m_player->GetCollider(), enemy->GetCollider()))
 		{
-			auto enemyRef = *enemy;
-			auto playerRef = *m_player;
-			m_player->OnCollision(&enemyRef);
-			enemy->OnCollision(&playerRef);
+			m_player->OnCollision(enemy);
 		}
 	}
-
-	for (auto &bomb : m_bombs)
+	// Bombs
+	for (auto bomb : m_bombs)
 	{
 		for (auto &enemy : m_enemyList)
 			if (Service<CollisionHandler>::Get()->IsColliding(bomb->GetCollider(), enemy->GetCollider()))
 			{
-				auto enemyRef = *enemy;
-				enemy->OnCollision(&enemyRef);
+				enemy->OnCollision(bomb);
 			}
 
 		/*
@@ -272,67 +291,48 @@ void GameState::CheckCollisions() const
 		*/
 	}
 
-
-
-	/*
-	// Enemies
-	for (const auto &enemy : m_enemyList)
-	{
-		for (int x = 0; x < Config::MAX_BLOCKS_X; x++)
-		{
-			for (int y = 0; y < Config::MAX_BLOCKS_Y; y++)
-			{
-				Block block = *m_map->findBlockByIndex(x, y);
-				if (Service<CollisionHandler>::Get()->IsColliding(enemy->GetCollider(), block.GetCollider()))
-				{
-					enemy->OnCollision(&block);
-				}
-			}
-		}
-
-		if (Service<CollisionHandler>::Get()->IsColliding(m_player->GetCollider(), enemy->GetCollider()))
-		{
-			m_player->OnCollision(enemy);
-		}
-	}
-	*/
-
 	// Flames
-	for (const auto &flame : m_flames)
+	for (auto flame : m_flames)
 	{
 		if (Service<CollisionHandler>::Get()->IsColliding(flame->GetCollider(), m_player->GetCollider()))
 		{
-			auto flameRef = *flame;
-			m_player->OnCollision(&flameRef);
+			m_player->OnCollision(flame);
 		}
 
 		for (const auto &enemy : m_enemyList)
 		{
 			if (Service<CollisionHandler>::Get()->IsColliding(flame->GetCollider(), enemy->GetCollider()))
 			{
-				auto flameRef = *flame;
-				enemy->OnCollision(&flameRef);
+				enemy->OnCollision(flame);
+			}
+		}
+
+		for (auto &powerUp : m_powerUps)
+		{
+			if (Service<CollisionHandler>::Get()->IsColliding(flame->GetCollider(), powerUp->GetCollider()))
+			{
+				powerUp->OnCollision(flame);
 			}
 		}
 	}
 
-
-	/*
-	for (const auto powerUp : m_powerUps)
+	// Powerups
+	for (auto powerUp : m_powerUps)
 	{
 		if (Service<CollisionHandler>::Get()->IsColliding(m_player->GetCollider(), powerUp->GetCollider()))
 		{
 			m_player->OnCollision(powerUp);
+			powerUp->OnCollision(m_player);
 		}
 	}
-	*/
 }
 
 bool GameState::checkWinCondition()
 {
 	if (isExitOpen())
 	{
-
+		m_player->HasExited();
+		return true;
 	}
 	return false;
 }
@@ -409,7 +409,8 @@ void GameState::spawnPowerUps()
 			y = Helpers::RandomNumber(Config::MAX_BLOCKS_Y - 1);
 
 			if (m_map->findBlockByIndex(x, y)->GetBlockType() == Config::BREAKABLE && !hasPowerUp(x, y)) {
-				m_powerUps.emplace_back(makesp<PowerUp>(x, y, powerUpType));
+				m_powerUps.emplace_back(makesp<PowerUp>(0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT,
+					0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT, x*Config::BLOCK_WIDTH, y*Config::BLOCK_HEIGHT, powerUpType));
 				allowedBlock = true;
 				break;
 			}
@@ -422,7 +423,7 @@ bool GameState::hasPowerUp(int index_x, int index_y)
 	bool foundPowerUp = false;
 	for (const auto &powerUp : m_powerUps)
 	{
-		if (powerUp->m_index_x == index_x && powerUp->m_index_y == index_y)
+		if (powerUp->GetIndexX() == index_x && powerUp->GetIndexY() == index_y)
 		{
 			foundPowerUp = true;
 			break;

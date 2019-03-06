@@ -2,24 +2,33 @@
 #include "SpriteSheet.h"
 
 
-Animator::Animator()
+Animator::Animator(int p_rows)
 {
 	m_frame = 0;
 	m_timeSinceLastFrame = 0;
+	m_rows = p_rows;
 }
-
 
 Animator::~Animator()
 {
 }
 
-void Animator::Loop(SDL_Renderer* p_renderer, SpriteSheet &p_spriteSheet, int p_delayPerFrame, SDL_Rect p_window_rect)
+void Animator::Loop(SDL_Renderer* p_renderer, SpriteSheet &p_spriteSheet, int p_delayPerFrame, SDL_Rect p_window_rect, int p_animated_frames, int p_row)
 {
+	int animatedFrames;
+	if (p_animated_frames != -1)
+	{
+		animatedFrames = p_animated_frames;
+	}
+	else
+	{
+		animatedFrames = p_spriteSheet.GetTotalFrames();
+	}
 	if (p_renderer != nullptr)
 	{
-		m_frame = (SDL_GetTicks() / p_delayPerFrame) % p_spriteSheet.GetTotalFrames();
+		m_frame = (SDL_GetTicks() / p_delayPerFrame) % animatedFrames;
 
-		SDL_RenderCopy(p_renderer, p_spriteSheet.GetTexture(), &p_spriteSheet.GetTextureRect(m_frame), &p_window_rect);
+		SDL_RenderCopy(p_renderer, p_spriteSheet.GetTexture(), &p_spriteSheet.GetTextureRect(m_frame, p_row, m_rows), &p_window_rect);
 	}
 	else
 	{
@@ -58,18 +67,18 @@ bool Animator::PlayOnce(SDL_Renderer* p_renderer, SpriteSheet &p_spriteSheet, in
 	return false;
 }
 
-void Animator::PlayCurrentFrame(SDL_Renderer* p_renderer, SpriteSheet &p_spriteSheet, SDL_Rect p_window_rect)
+void Animator::PlayOneFrame(SDL_Renderer* p_renderer, SpriteSheet &p_spriteSheet, SDL_Rect p_window_rect, int p_frame)
 {
 	if (p_renderer != nullptr)
 	{
-		if (m_frame < 0 || m_frame > p_spriteSheet.GetTotalFrames())
+		if (p_frame < 0 || p_frame > p_spriteSheet.GetTotalFrames())
 		{
-			m_frame = 1;
+			p_frame = 1;
 		}
-		SDL_RenderCopy(p_renderer, p_spriteSheet.GetTexture(), &p_spriteSheet.GetTextureRect(m_frame), &p_window_rect);
+		SDL_RenderCopy(p_renderer, p_spriteSheet.GetTexture(), &p_spriteSheet.GetTextureRect(p_frame), &p_window_rect);
 	}
 	else
 	{
-		SDL_Log("Animator::PlayCurrentFrame: renderer is nullptr");
+		SDL_Log("Animator::PlayOneFrame: renderer is nullptr");
 	}
 }

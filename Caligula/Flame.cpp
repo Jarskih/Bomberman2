@@ -28,6 +28,7 @@ Flame::Flame(std::string p_filePath, int p_x, int p_y, int frames, int p_collide
 Flame::~Flame()
 {
 	SDL_Log("Flame::~Flame");
+	m_collider = nullptr;
 }
 
 void Flame::Update()
@@ -58,8 +59,8 @@ void Flame::Render(SDL_Renderer* p_renderer)
 		m_active = false;
 	}
 
-	SDL_SetRenderDrawColor(p_renderer, 255, 255, 255, 0);
-	SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
+	//	SDL_SetRenderDrawColor(p_renderer, 255, 255, 255, 0);
+	//	SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
 }
 
 void Flame::ColliderResize(const int x, const int y, const int width, const int height) const

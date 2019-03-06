@@ -9,13 +9,14 @@ class Block : public Entity
 {
 public:
 	Block(const char* p_textureFilePath, int p_srcX, int p_srcY, int p_srcW, int p_srcH, int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH, int p_x, int p_y, int p_block_type, bool p_has_collider);
+	~Block();
 	void Render(SDL_Renderer* p_renderer) override;
 	void Update() override;
 
 	void changeBlockType(int newType);
 	std::pair <int, int> getBlockIndex() const;
 
-	void OnCollision(Entity* p_other) override;
+	void OnCollision(sp<Flame> &flame);
 	int GetIndexX() const;
 	int GetIndexY() const;
 	int GetBlockType() const;

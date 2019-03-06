@@ -8,6 +8,12 @@
 Map::Map(int level)
 {
 	generateMap(level);
+	pathfinder = new Pathfinding();
+}
+
+Map::~Map()
+{
+	pathfinder = nullptr;
 }
 
 void Map::Update()
@@ -133,17 +139,6 @@ const char* Map::GetSpritePath(const int blockType)
 	}
 }
 
-
-void Map::handleEvent(SDL_Event& event)
-{
-	/*
-	for (const auto& player : m_playerList)
-	{
-		player->handleEvent(event);
-	}
-	*/
-}
-
 // Get block object from coordinates
 sp<Block> Map::findBlockByCoordinates(const int x, const int y)
 {
@@ -160,4 +155,9 @@ sp<Block> Map::findBlockByIndex(const int x, const int y)
 	{
 		return tileSet[0][0];
 	}
+}
+
+std::list<Block*> Map::requestPath(Block &start, Block &end) const
+{
+	return pathfinder->calculatePath(start, end);
 }

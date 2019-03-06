@@ -39,6 +39,15 @@ struct Config
 	static const int BOMB_WIDTH = Config::BLOCK_WIDTH;
 	static const int BOMB_HEIGHT = Config::BLOCK_HEIGHT;
 
+	// Animations
+
+	static const int POWER_UP_DELAY_PER_FRAME = 200;
+	static const int BOMB_DELAY_PER_FRAME = 200;
+	static const int FLAME_DELAY_PER_FRAME = 200;
+	static const int ENEMY_DELAY_PER_FRAME = 200;
+
+	static const int POWERUP_SCORE = 1000;
+
 	enum Blocks
 	{
 		BREAKABLE,

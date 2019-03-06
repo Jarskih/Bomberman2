@@ -24,6 +24,8 @@ EasyEnemy::EasyEnemy(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
 	m_state = DOWN;
 	m_speed = 1;
 	m_decision_delay = 5000;
+	m_delay_per_frame = 200;
+	m_animated_frames = 4;
 
 	/*
 	if (m_type == HARD_ENEMY)
@@ -34,8 +36,20 @@ EasyEnemy::EasyEnemy(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
 	*/
 }
 
+EasyEnemy::~EasyEnemy()
+{
+	SDL_Log("EasyEnemy::~EasyEnemy");
+	m_collider = nullptr;
+}
+
 void EasyEnemy::Update()
 {
+	if (m_state == DEAD)
+	{
+		m_active = false;
+		m_collider->SetSize(0, 0);
+	}
+
 	// Add delay to decisions to change direction and stop A* from overshooting the target block
 	if (SDL_GetTicks() - m_decision_time > m_decision_delay)
 	{
@@ -61,29 +75,23 @@ void EasyEnemy::Update()
 
 void EasyEnemy::Render(SDL_Renderer* p_renderer)
 {
-	if (!m_active && SDL_GetTicks() - m_time_died > m_death_delay) {
-		return;
-	}
-
-	const int animatedFrames = 4;
-	const int delayPerFrame = 200;
-
-	if (!m_active)
-	{
-		m_frame = 5;
+	if (m_state == DEAD) {
+		if (animator.PlayOnce(p_renderer, *m_spriteSheet, m_delay_per_frame, m_window_rect, m_time_died))
+		{
+			m_active = false;
+		}
 	}
 	else
 	{
-		m_frame = (SDL_GetTicks() / delayPerFrame) % animatedFrames;
+		animator.Loop(p_renderer, *m_spriteSheet, m_delay_per_frame, m_window_rect, m_animated_frames);
 	}
 
 	m_window_rect.x = m_x;
 	m_window_rect.y = m_y;
 
-	SDL_RenderCopy(p_renderer, m_spriteSheet->GetTexture(), &m_spriteSheet->GetTextureRect(m_frame), &m_window_rect);
 
-	SDL_SetRenderDrawColor(p_renderer, 255, 255, 255, 0);
-	SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
+	//SDL_SetRenderDrawColor(p_renderer, 255, 255, 255, 0);
+	//SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
 }
 
 void EasyEnemy::Decide()
@@ -201,7 +209,22 @@ void EasyEnemy::Move()
 	m_collider->SetPosition(m_x + Config::PADDING_X, m_y + Config::PADDING_Y);
 }
 
-void EasyEnemy::OnCollision(Entity* other)
+void EasyEnemy::OnCollision(sp<Flame> &flame) {
+	Die();
+}
+
+void EasyEnemy::OnCollision(sp<Block> &block) {
+	m_x = old_x;
+	m_window_rect.x = m_x;
+
+	m_y = old_y;
+	m_window_rect.y = m_y;
+
+	m_collider->SetPosition(m_x + Config::PADDING_X, m_y + Config::PADDING_Y);
+	Decide();
+}
+
+void EasyEnemy::OnCollision(sp<Bomb> &bomb)
 {
 	m_x = old_x;
 	m_window_rect.x = m_x;
@@ -302,9 +325,11 @@ void EasyEnemy::smartMove()
 */
 }
 
-void EasyEnemy::die()
+void EasyEnemy::Die()
 {
 	m_time_died = SDL_GetTicks();
-	m_active = false;
-	//Service<State>::Get()->incrementScore(m_score);
+	if (m_state != DEAD)
+	{
+		m_state = DEAD;
+	}
 }

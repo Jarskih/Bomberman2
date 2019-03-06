@@ -2,121 +2,77 @@
 #include "Map.h"
 #include "Collider.h"
 #include "SpriteHandler.h"
+#include "Service.h"
 
-PowerUp::PowerUp(int index_x, int index_y, int p_powerUpType) : m_index_x(index_x), m_index_y(index_y), m_powerUpType(p_powerUpType)
+PowerUp::PowerUp(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
+	int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH,
+	int p_x, int p_y, int p_powerUpType) : m_srcX(p_srcX), m_srcY(p_srcY), m_srcH(p_srcH), m_srcW(p_srcW), m_score(Config::POWERUP_SCORE),
+	m_powerUpType(p_powerUpType)
 {
-	// m_spriteSheet = Service<SpriteHandler>::Get()->CreateSpriteSheet("img/power_ups.png");
+	m_x = p_x;
+	m_y = p_y;
+	m_spriteSheet = Service<SpriteHandler>::Get()->CreateSpriteSheet("img/power_ups.png", m_srcX, m_srcY, m_srcW,
+		m_srcH, 2);
 	m_type = EntityType::POWER_UP;
-	const auto blockCenter = Helpers::GetBlockCenter(m_index_x, m_index_y);
-	m_collider = new RectangleCollider(blockCenter.first, blockCenter.second, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT);
-	m_pos_x = blockCenter.first;
-	m_pos_y = blockCenter.second;
-	m_window_rect.x = blockCenter.first;
-	m_window_rect.y = blockCenter.second;
+	m_collider = new RectangleCollider(p_colliderX, p_colliderY, p_colliderW, p_colliderH);
+	m_collider->SetPosition(m_x, m_y);
+	m_window_rect = { m_x, m_y, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT };
+	m_delayPerFrame = Config::POWER_UP_DELAY_PER_FRAME;
+	m_index_x = Helpers::GetCurrentBlock(m_x, m_y).first;
+	m_index_y = Helpers::GetCurrentBlock(m_x, m_y).second;
+	m_visible = false;
+	animator = new Animator(5);
+}
+
+PowerUp::~PowerUp()
+{
+	animator = nullptr;
 }
 
 void PowerUp::Update()
 {
-}
+
+};
 
 void PowerUp::Render(SDL_Renderer* p_renderer)
 {
-	/*
-	if (m_is_picked_up) {
-		return;
-	}
-	const int delayPerFrame = 200;
-
-	// Debug
-
-	SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
-	SDL_RenderDrawRect(m_renderer, &m_collider);
-
-	SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 0);
-	SDL_RenderDrawRect(m_renderer, &m_window_rect);
-
-	/*
-	if (m_type == EXIT && !map->m_enemies_dead)
+	if (m_visible)
 	{
-		m_frame = 0;
-	}
-	else
-	{
-		m_frame = (SDL_GetTicks() / delayPerFrame) % m_total_frames;
-	}
-
-	*/
-
-	m_texture_rect.y = m_frame * m_texture_rect.h;
-	SDL_QueryTexture(m_texture, nullptr, nullptr, &m_texture_rect.w, &m_texture_rect.h);
-
-	m_texture_rect.h /= m_total_frames;
-	m_texture_rect.w /= 5;
-	m_texture_rect.x = m_type * m_texture_rect.w;
-
-	SDL_RenderCopy(m_renderer, m_texture, &m_texture_rect, &m_window_rect);
-
-
-}
-/*
-void PowerUp::checkCollision(const std::vector<up<Player>>& m_playerList)
-{
-
-	if (!m_is_picked_up) {
-		for (const auto& player : m_playerList)
+		if (m_exit_open && m_powerUpType == EXIT)
 		{
-			if (Helpers::CheckCollision(m_collider, player->getCollider()))
-			{
-				auto state = Service<State>::Get();
-				auto map = Service<Map>::Get();
-				switch (m_type)
-				{
-				case FLAME:
-					MusicPlayer::PlaySoundFromPath("sounds/bonus_pickup.wav");
-					player->m_flame_power++;
-					state->incrementScore(m_score);
-					m_is_picked_up = true;
-					break;
-				case BOMB:
-					MusicPlayer::PlaySoundFromPath("sounds/bonus_pickup.wav");
-					player->m_max_bombs++;
-					state->incrementScore(m_score);
-					m_is_picked_up = true;
-					break;
-				case SPEED:
-					MusicPlayer::PlaySoundFromPath("sounds/bonus_pickup.wav");
-					player->m_speed++;
-					state->incrementScore(m_score);
-					m_is_picked_up = true;
-					break;
-				case LIFE:
-					MusicPlayer::PlaySoundFromPath("sounds/bonus_pickup.wav");
-					player->m_lives++;
-					state->incrementLives();
-					state->incrementScore(m_score);
-					m_is_picked_up = true;
-					break;
-				case EXIT:
-					if (map->m_enemies_dead)
-					{
-						map->m_level_cleared = true;
-					}
-					break;
-				default:
-					break;
-				}
-			}
+			animator->PlayOneFrame(p_renderer, *m_spriteSheet, m_window_rect, 0);
+		}
+		else
+		{
+			animator->Loop(p_renderer, *m_spriteSheet, m_delayPerFrame, m_window_rect, m_spriteSheet->GetTotalFrames(), m_powerUpType);
 		}
 	}
-
 }
-	*/
-void PowerUp::OnCollision(Entity* other)
-{
 
+void PowerUp::OnCollision(sp<Player> player)
+{
+	if (m_powerUpType != EXIT)
+	{
+		m_active = false;
+	}
+}
+
+void PowerUp::OnCollision(sp<Flame> flame)
+{
+	m_visible = true;
 }
 
 int PowerUp::GetPowerUpType()
 {
 	return m_powerUpType;
+}
+
+int PowerUp::GetIndexX()
+{
+	return m_index_x;
+}
+
+int PowerUp::GetIndexY()
+{
+	return m_index_y;
 }

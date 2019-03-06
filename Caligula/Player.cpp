@@ -1,13 +1,12 @@
 ﻿#include "Collider.h"
 #include "SpriteHandler.h"
-#include "SpriteSheet.h"
 #include "Service.h"
 #include "Player.h"
 #include <iostream>
 #include "InputHandler.h"
 #include "Bomb.h"
-#include "Musicplayer.h"
 #include "Animator.h"
+#include "Musicplayer.h"
 
 Player::Player(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
 	int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH,
@@ -41,6 +40,15 @@ Player::Player(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
 	m_time_died = 0;
 	m_old_time = 0;
 	m_delay_per_frame = 100;
+	m_exited = false;
+	m_can_exit = false;
+
+	m_sound = Service<SoundHandler>::Get()->CreateSound("sounds/bonus_pickup.wav");
+}
+
+Player::~Player()
+{
+	m_collider = nullptr;
 }
 
 void Player::Update()
@@ -78,15 +86,15 @@ void Player::Render(SDL_Renderer* p_renderer) {
 		}
 		else
 		{
-			animator.PlayCurrentFrame(p_renderer, *m_spriteSheet, m_window_rect);
+			animator.PlayOneFrame(p_renderer, *m_spriteSheet, m_window_rect);
 		}
 	}
 
 	m_window_rect.x = m_x;
 	m_window_rect.y = m_y;
 
-	SDL_SetRenderDrawColor(p_renderer, 255, 255, 0, 255);
-	SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
+	//SDL_SetRenderDrawColor(p_renderer, 255, 255, 0, 255);
+	//SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
 }
 
 void Player::createSprites()
@@ -194,53 +202,65 @@ void Player::movePlayer() {
 
 }
 
-void Player::OnCollision(Entity* p_other)
-{
-	if (p_other->GetType() == ENEMY || p_other->GetType() == FLAME)
-	{
-		Die();
-	}
+void Player::OnCollision(sp<Block> &block) {
+	m_x = m_oldX;
+	m_window_rect.x = m_x;
 
-	if (p_other->GetType() == BLOCK && p_other->GetBlockType() != Config::GRASS || p_other->GetType() == BOMB) {
+	m_y = m_oldY;
+	m_window_rect.y = m_y;
 
-		m_x = m_oldX;
-		m_window_rect.x = m_x;
-
-		m_y = m_oldY;
-		m_window_rect.y = m_y;
-
-		m_collider->SetPosition(m_x + Config::PLAYER_WIDTH / 3, m_y + Config::PLAYER_HEIGHT / 2);
-	}
+	m_collider->SetPosition(m_x + Config::PLAYER_WIDTH / 3, m_y + Config::PLAYER_HEIGHT / 2);
 }
 
-void Player::OnCollision(const sp<PowerUp> &p_other)
+void Player::OnCollision(sp<Bomb> &bomb) {
+	m_x = m_oldX;
+	m_window_rect.x = m_x;
+
+	m_y = m_oldY;
+	m_window_rect.y = m_y;
+
+	m_collider->SetPosition(m_x + Config::PLAYER_WIDTH / 3, m_y + Config::PLAYER_HEIGHT / 2);
+}
+
+void Player::OnCollision(sp<PowerUp> &powerUp)
 {
-	switch (p_other->GetPowerUpType())
+	switch (powerUp->GetPowerUpType())
 	{
 	case PowerUp::FLAME:
-		MusicPlayer::PlaySoundFromPath("sounds/bonus_pickup.wav");
+		m_sound->Play(0);
 		m_flame_power++;
-		//m_score += p_other.GetScore();
 		break;
 	case PowerUp::BOMB:
+		m_sound->Play(0);
 		m_max_bombs++;
-		//m_score += p_other.GetScore();
 		break;
 	case PowerUp::SPEED:
-		MusicPlayer::PlaySoundFromPath("sounds/bonus_pickup.wav");
+		m_sound->Play(0);
 		m_speed++;
-		//m_score += p_other.GetScore();
 		break;
 	case PowerUp::LIFE:
-		MusicPlayer::PlaySoundFromPath("sounds/bonus_pickup.wav");
+		m_sound->Play(0);
 		m_lives++;
-		//m_score += p_other.GetScore();
 		break;
 	case PowerUp::EXIT:
+		if (m_can_exit)
+		{
+			m_exited = true;
+		}
 		break;
 	default:
 		break;
 	}
+}
+
+void Player::OnCollision(sp<Flame>& flame)
+{
+	Die();
+}
+
+void Player::OnCollision(sp<EasyEnemy>& EasyEnemy)
+{
+	Die();
 }
 
 void Player::Die()
@@ -267,4 +287,14 @@ bool Player::CanDropBomb()
 bool Player::IsDropBombPressed()
 {
 	return Service<InputHandler>::Get()->IsKeyPressed(m_dropBomb);
+}
+
+bool Player::HasExited() const
+{
+	return m_exited;
+}
+
+void Player::AbleToExit(bool can_exit)
+{
+	m_can_exit = can_exit;
 }
