@@ -19,8 +19,8 @@ struct Config
 	static const int PLAYER_HEIGHT = BLOCK_HEIGHT * 15 / 10;
 	static const int PLAYER_COLLIDER_X = Config::PLAYER_WIDTH / 3;
 	static const int PLAYER_COLLIDER_Y = Config::PLAYER_HEIGHT / 3;
-	static const int PLAYER_COLLIDER_WIDTH = PLAYER_WIDTH / 3;
-	static const int PLAYER_COLLIDER_HEIGHT = PLAYER_HEIGHT / 2;
+	static const int ENTILY_COLLIDER_WIDTH = PLAYER_WIDTH / 3;
+	static const int ENTITY_COLLIDER_HEIGHT = PLAYER_HEIGHT / 2;
 	static const int PLAYER_STARTING_POS_X = Config::BLOCK_WIDTH + Config::BLOCK_WIDTH / 2;
 	static const int PLAYER_STARTING_POS_Y = Config::BLOCK_HEIGHT + Config::BLOCK_HEIGHT / 2;
 
@@ -32,8 +32,8 @@ struct Config
 	static const int NUMBER_OF_ENEMIES = 3;
 	static const int ACTOR_WIDTH = 100;
 	static const int ACTOR_HEIGHT = 80;
-	static const int PADDING_X = Config::BLOCK_WIDTH / 10;
-	static const int PADDING_Y = Config::BLOCK_HEIGHT / 10;
+	static const int PADDING_X = Config::BLOCK_WIDTH / 8;
+	static const int PADDING_Y = Config::BLOCK_HEIGHT / 8;
 
 	// Bomb
 	static const int BOMB_WIDTH = Config::BLOCK_WIDTH;

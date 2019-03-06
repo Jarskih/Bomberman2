@@ -144,14 +144,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Bomb.cpp" />
     <ClCompile Include="EasyEnemy.cpp" />
     <ClCompile Include="Flame.cpp" />
+    <ClCompile Include="GameOverState.cpp" />
     <ClCompile Include="GUIArrow.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Hud.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Music.cpp" />
     <ClCompile Include="MusicPlayer.cpp" />
@@ -169,19 +172,22 @@
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteHandler.cpp" />
     <ClCompile Include="SpriteSheet.cpp" />
-    <ClCompile Include="TEST_STATE_1.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animator.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Bomb.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="EasyEnemy.h" />
     <ClInclude Include="Flame.h" />
+    <ClInclude Include="GameOverState.h" />
     <ClInclude Include="GUIArrow.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Hud.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="MenuState.h" />
     <ClInclude Include="Music.h" />
     <ClInclude Include="MusicPlayer.h" />
     <ClInclude Include="Pathfinding.h" />
@@ -201,7 +207,7 @@
     <ClInclude Include="SpriteHandler.h" />
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="State.h" />
-    <ClInclude Include="TEST_STATE_1.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,60 +1,62 @@
 ﻿#include "EasyEnemy.h"
 #include "Map.h"
 #include "Service.h"
-///#include "Textures.h"
-//#include "Hud.h"
 #include "State.h"
 #include "Pathfinding.h"
-//#include "Bomb.h"
-//#include "Pathfinding.h"
+#include "SpriteHandler.h"
+#include "Collider.h"
+#include "Player.h"
 
-EasyEnemy::EasyEnemy(const EntityType enemy_type, const int index_x, const int index_y)
+EasyEnemy::EasyEnemy(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
+	int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH,
+	int p_x, int p_y) : m_srcX(p_srcX), m_srcY(p_srcY), m_srcW(p_srcW), m_srcH(p_srcH)
 {
-	m_type = enemy_type;
-	const auto blockCenter = Helpers::GetBlockCenter(index_x, index_y);
-	m_x = blockCenter.first;
-	m_y = blockCenter.second;
-	if (m_type == EASY_ENEMY)
-	{
-		m_speed = 2;
-		m_decision_delay = 5000;
-		m_sprite = "easyEnemy";
-	}
-	else if (m_type == HARD_ENEMY)
+	m_x = p_x;
+	m_y = p_y;
+	m_type = ENEMY;
+	m_active = true;
+	m_visible = true;
+	m_collider = new RectangleCollider(p_colliderX, p_colliderY, p_colliderW, p_colliderH);
+	m_spriteSheet = Service<SpriteHandler>::Get()->CreateSpriteSheet("img/easy_enemy.png", m_srcX, m_srcY, m_srcW,
+		m_srcH, 6);
+	m_window_rect = { 0, 0, m_srcH, m_srcW };
+
+	m_state = DOWN;
+	m_speed = 1;
+	m_decision_delay = 5000;
+
+	/*
+	if (m_type == HARD_ENEMY)
 	{
 		m_speed = 3;
 		m_decision_delay = 10;
-		m_sprite = "hardEnemy";
 	}
-	//m_state = DOWN;
-	//m_windowRect = { 0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT };
-	//m_collider = { 0, 0, Config::BLOCK_WIDTH - Config::PADDING_X, Config::BLOCK_HEIGHT - Config::PADDING_Y };
+	*/
 }
 
 void EasyEnemy::Update()
 {
-	if (m_active)
+	// Add delay to decisions to change direction and stop A* from overshooting the target block
+	if (SDL_GetTicks() - m_decision_time > m_decision_delay)
 	{
-		loadTexture(m_sprite);
-
-		// Add delay to decisions to change direction and stop A* from overshooting the target block
-		if (SDL_GetTicks() - m_decision_time > m_decision_delay)
-		{
-			decide();
-		}
-
-		// A* pathfinding
-		if (m_type == HARD_ENEMY)
-		{
-			smartMove();
-		}
-
-		// Random movement
-		if (m_type == EASY_ENEMY)
-		{
-			move();
-		}
+		Decide();
 	}
+
+	Move();
+
+	/*
+	// A* pathfinding
+	if (m_type == HARD_ENEMY)
+	{
+		smartMove();
+	}
+
+	// Random movement
+	if (m_type == EASY_ENEMY)
+	{
+		Move();
+	}
+	*/
 }
 
 void EasyEnemy::Render(SDL_Renderer* p_renderer)
@@ -63,12 +65,8 @@ void EasyEnemy::Render(SDL_Renderer* p_renderer)
 		return;
 	}
 
-	const int totalFrames = 6;
 	const int animatedFrames = 4;
 	const int delayPerFrame = 200;
-
-	//m_collider.x = m_x;
-	//m_collider.y = m_y;
 
 	if (!m_active)
 	{
@@ -79,44 +77,16 @@ void EasyEnemy::Render(SDL_Renderer* p_renderer)
 		m_frame = (SDL_GetTicks() / delayPerFrame) % animatedFrames;
 	}
 
-	//m_textureRect.y = m_frame * m_textureRect.h;
-	//SDL_QueryTexture(m_texture, nullptr, nullptr, &m_textureRect.w, &m_textureRect.h);
+	m_window_rect.x = m_x;
+	m_window_rect.y = m_y;
 
-	//m_textureRect.h /= totalFrames;
+	SDL_RenderCopy(p_renderer, m_spriteSheet->GetTexture(), &m_spriteSheet->GetTextureRect(m_frame), &m_window_rect);
 
-	//SDL_RenderCopy(m_renderer, m_texture, &m_textureRect, &m_windowRect);
-
-	/*
-	// Debug
-	const auto state = Service<State>::Get();
-	if (state->m_debug)
-	{
-		SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
-		SDL_RenderDrawRect(m_renderer, &m_collider);
-
-		SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 0);
-		SDL_RenderDrawRect(m_renderer, &m_windowRect);
-
-		for (const auto& block : m_path)
-		{
-			SDL_SetRenderDrawColor(m_renderer, 0, 0, 255, 255);
-			SDL_RenderDrawRect(m_renderer, block->GetCollider());
-		}
-	}
-	*/
+	SDL_SetRenderDrawColor(p_renderer, 255, 255, 255, 0);
+	SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
 }
 
-void EasyEnemy::loadTexture(std::string sprite)
-{
-	if (!m_texture_loaded)
-	{
-		//auto textures = Service<Textures>::Get();
-		//m_texture = textures->findTexture(sprite);
-		m_texture_loaded = true;
-	}
-}
-
-void EasyEnemy::decide()
+void EasyEnemy::Decide()
 {
 	/*
 	if (m_type == HARD_ENEMY)
@@ -136,154 +106,121 @@ void EasyEnemy::decide()
 		m_old_target_x = target_block->GetPositionX();
 		m_old_target_y = target_block->GetPositionY();
 	}
-	else if (m_type == EASY_ENEMY)
+	*/
+
+	const int random = rand() % 12;
+
+	switch (m_state)
 	{
-		const int random = rand() % 12;
-
-		/*
-		switch (m_state)
-		{
-		case UP:
-			if (random < 4)
-			{
-				m_state = LEFT;
-			}
-			else if (random > 3 && random < 9)
-			{
-				m_state = RIGHT;
-			}
-			else
-			{
-				m_state = DOWN;
-			}
-			break;
-		case DOWN:
-			if (random < 4)
-			{
-				m_state = LEFT;
-			}
-			else if (random > 3 && random < 9)
-			{
-				m_state = RIGHT;
-			}
-			else
-			{
-				m_state = UP;
-			}
-			break;
-		case LEFT:
-			if (random < 4)
-			{
-				m_state = UP;
-			}
-			else if (random > 3 && random < 9)
-			{
-				m_state = DOWN;
-			}
-			else
-			{
-				m_state = RIGHT;
-			}
-			break;
-		case RIGHT:
-			if (random < 4)
-			{
-				m_state = UP;
-			}
-			else if (random > 3 && random < 9)
-			{
-				m_state = DOWN;
-			}
-			else
-			{
-				m_state = LEFT;
-			}
-			break;
-		default:
-			break;
-		}
-
-	m_decision_time = SDL_GetTicks();
-}
-			*/
-}
-
-void EasyEnemy::move()
-{
-	auto map = Service<Map>::Get();
-	const int oldX = m_x;
-	const int oldY = m_y;
-	bool colliding = false;
-
-	/*
-	switch (m_state) {
 	case UP:
-		m_pos_y -= m_speed;
+		if (random < 4)
+		{
+			m_state = LEFT;
+		}
+		else if (random > 3 && random < 9)
+		{
+			m_state = RIGHT;
+		}
+		else
+		{
+			m_state = DOWN;
+		}
 		break;
 	case DOWN:
-		m_pos_y += m_speed;
+		if (random < 4)
+		{
+			m_state = LEFT;
+		}
+		else if (random > 3 && random < 9)
+		{
+			m_state = RIGHT;
+		}
+		else
+		{
+			m_state = UP;
+		}
 		break;
 	case LEFT:
-		m_pos_x -= m_speed;
+		if (random < 4)
+		{
+			m_state = UP;
+		}
+		else if (random > 3 && random < 9)
+		{
+			m_state = DOWN;
+		}
+		else
+		{
+			m_state = RIGHT;
+		}
 		break;
 	case RIGHT:
-		m_pos_x += m_speed;
+		if (random < 4)
+		{
+			m_state = UP;
+		}
+		else if (random > 3 && random < 9)
+		{
+			m_state = DOWN;
+		}
+		else
+		{
+			m_state = LEFT;
+		}
 		break;
 	default:
 		break;
 	}
-	m_windowRect.x = m_x;
-	m_collider.x = m_x + Config::PADDING_X;
-	m_windowRect.y = m_y;
-	m_collider.y = m_y + Config::PADDING_Y;
-	*/
 
-	/*
-	for (const auto& player : map->m_playerList)
-	{
-		for (const auto& bomb : player->m_bombs)
-		{
-			if (Helpers::CheckCollision(m_collider, bomb->collider))
-			{
-				colliding = true;
-				break;
-			}
-		}
-	}
-	if (!colliding)
-	{
-		for (int x = 0; x < Config::MAX_BLOCKS_X; x++) {
-			for (int y = 0; y < Config::MAX_BLOCKS_Y; y++) {
-				{
-					if (map->tileSet[x][y]->m_block_type != Config::GRASS && Helpers::CheckCollision(m_collider, *map->tileSet[x][y]->GetCollider()))
-					{
-						colliding = true;
-						break;
-					}
-				}
-			}
-		}
-	}
-	if (colliding)
-	{
-		m_x = oldX;
-		m_windowRect.x = m_x;
-		m_collider.x = m_x + Config::PADDING_X;;
-
-		m_y = oldY;
-		m_windowRect.y = m_y;
-		m_collider.y = m_y + Config::PADDING_Y;
-		decide();
-	}
-	*/
+	m_decision_time = SDL_GetTicks();
 
 }
+
+void EasyEnemy::Move()
+{
+	old_x = m_x;
+	old_y = m_y;
+	switch (m_state) {
+	case UP:
+		m_y -= m_speed;
+		break;
+	case DOWN:
+		m_y += m_speed;
+		break;
+	case LEFT:
+		m_x -= m_speed;
+		break;
+	case RIGHT:
+		m_x += m_speed;
+		break;
+	default:
+		break;
+	}
+	m_window_rect.x = m_x;
+	m_window_rect.y = m_y;
+	m_collider->SetPosition(m_x + Config::PADDING_X, m_y + Config::PADDING_Y);
+}
+
+void EasyEnemy::OnCollision(Entity* other)
+{
+	m_x = old_x;
+	m_window_rect.x = m_x;
+
+	m_y = old_y;
+	m_window_rect.y = m_y;
+
+	m_collider->SetPosition(m_x + Config::PADDING_X, m_y + Config::PADDING_Y);
+	Decide();
+}
+
 void EasyEnemy::smartMove()
 {
+	/*
 	auto map = Service<Map>::Get();
 	const int oldX = m_x;
 	const int oldY = m_y;
 	bool colliding = false;
+
 
 	if (!m_path.empty())
 	{
@@ -321,7 +258,6 @@ void EasyEnemy::smartMove()
 		m_x += static_cast<int>(m_speed_x);
 	}
 
-	/*
 	m_windowRect.x = m_x;
 	m_collider.x = m_x + Config::PADDING_X;
 	m_windowRect.y = m_y;

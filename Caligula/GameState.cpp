@@ -18,16 +18,17 @@ GameState::GameState(SDL_Renderer& p_renderer) : m_renderer(&p_renderer)
 	m_playerDeathSound = Service<SoundHandler>::Get()->CreateSound("sounds/player_death.wav");
 	m_powerUpPickupSound = Service<SoundHandler>::Get()->CreateSound("sounds/bonus_pickup.wav");
 	m_name = "GAME_STATE";
+	m_level = 1;
 }
 
 void GameState::Enter()
 {
 	std::cout << "GameState::Enter: Creating level" << std::endl;
 
-	m_map = makeunique<Map>(1);
-	Service<up<Map>>::Set(&m_map);
+	m_map = makesp<Map>(m_level);
+	Service<sp<Map>>::Set(&m_map);
 
-	m_player = makeunique<Player>(0, 0, Config::PLAYER_WIDTH, Config::PLAYER_HEIGHT,
+	m_player = makesp<Player>(0, 0, Config::PLAYER_WIDTH, Config::PLAYER_HEIGHT,
 		Config::PLAYER_COLLIDER_X, Config::PLAYER_COLLIDER_Y, Config::ENTILY_COLLIDER_WIDTH, Config::ENTITY_COLLIDER_HEIGHT,
 		Config::PLAYER_STARTING_POS_X, Config::PLAYER_STARTING_POS_Y,
 		Config::STARTING_LIVES);
@@ -37,10 +38,8 @@ void GameState::Enter()
 
 	std::cout << "GameState::Enter: Finished creating level and spawned entities" << std::endl;
 
-	// TODO enable music and remove bomb
+	// TODO enable music
 	// m_music->Play(-1);
-
-	// SpawnFlames(Helpers::GetBlockCenter(2, 6).first, Helpers::GetBlockCenter(2, 6).second, 3);
 }
 
 bool GameState::Update()
@@ -200,6 +199,8 @@ void GameState::UpdateFlameList()
 
 void GameState::CheckCollisions() const
 {
+	// TODO BOMB collisions, enemy flame collision
+
 	// Blocks
 	for (int x = 0; x < Config::MAX_BLOCKS_X; x++)
 	{
@@ -233,8 +234,8 @@ void GameState::CheckCollisions() const
 				{
 					if (Service<CollisionHandler>::Get()->IsColliding(flame->GetCollider(), block->GetCollider()))
 					{
-						sp<Block> blockRef = m_map->findBlockByIndex(x, y);
-						blockRef->OnCollision(flame);
+						auto flameRef = *flame;
+						block->OnCollision(&flameRef);
 					}
 				}
 			}
@@ -246,10 +247,32 @@ void GameState::CheckCollisions() const
 	{
 		if (Service<CollisionHandler>::Get()->IsColliding(m_player->GetCollider(), enemy->GetCollider()))
 		{
-			auto enemyObject = *enemy;
-			m_player->OnCollision(&enemyObject);
+			auto enemyRef = *enemy;
+			auto playerRef = *m_player;
+			m_player->OnCollision(&enemyRef);
+			enemy->OnCollision(&playerRef);
 		}
 	}
+
+	for (auto &bomb : m_bombs)
+	{
+		for (auto &enemy : m_enemyList)
+			if (Service<CollisionHandler>::Get()->IsColliding(bomb->GetCollider(), enemy->GetCollider()))
+			{
+				auto enemyRef = *enemy;
+				enemy->OnCollision(&enemyRef);
+			}
+
+		/*
+		if (Service<CollisionHandler>::Get()->IsColliding(bomb->GetCollider(), m_player->GetCollider()))
+		{
+			auto bombRef = *bomb;
+			m_player->OnCollision(&bombRef);
+		}
+		*/
+	}
+
+
 
 	/*
 	// Enemies
@@ -324,7 +347,7 @@ void GameState::spawnEnemies(int number, int enemyType)
 	for (auto numberOfEnemies = 0; numberOfEnemies < number; numberOfEnemies++)
 	{
 		const auto block = findRandomGrassBlock();
-		m_enemyList.push_back(makeunique<EasyEnemy>(0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT,
+		m_enemyList.push_back(makesp<EasyEnemy>(0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT,
 			0, 0, Config::ENTILY_COLLIDER_WIDTH, Config::ENTITY_COLLIDER_HEIGHT, block->GetPositionX(), block->GetPositionY()));
 	}
 }
@@ -363,7 +386,7 @@ void GameState::spawnEnemiesAtStart(int enemies)
 			const auto block = m_map->findBlockByIndex(x, y);
 			if (block->GetBlockType() == Config::GRASS)
 			{
-				m_enemyList.push_back(makeunique<EasyEnemy>(0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT,
+				m_enemyList.push_back(makesp<EasyEnemy>(0, 0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT,
 					0, 0, Config::ENTILY_COLLIDER_WIDTH, Config::ENTITY_COLLIDER_HEIGHT, block->GetPositionX(), block->GetPositionY()));
 				allowedBlock = true;
 				break;
@@ -386,7 +409,7 @@ void GameState::spawnPowerUps()
 			y = Helpers::RandomNumber(Config::MAX_BLOCKS_Y - 1);
 
 			if (m_map->findBlockByIndex(x, y)->GetBlockType() == Config::BREAKABLE && !hasPowerUp(x, y)) {
-				m_powerUps.emplace_back(makeunique<PowerUp>(x, y, powerUpType));
+				m_powerUps.emplace_back(makesp<PowerUp>(x, y, powerUpType));
 				allowedBlock = true;
 				break;
 			}

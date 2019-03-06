@@ -1,14 +1,10 @@
 ﻿#pragma once
-#include <string>
-#include <vector>
-#include <SDL_mixer.h>
 #include "Config.h"
-#include "Helpers.h"
-#include <map>
 #include "Entity.h"
 #include "Sound.h"
-#include "SoundHandler.h"
+#include "Animator.h"
 
+class Animator;
 class Block;
 class Map;
 class Enemy;
@@ -24,12 +20,7 @@ public:
 	void Update() override;
 	void Render(SDL_Renderer* renderer) override;
 	bool ShouldExplode();
-
-	bool isExploded = false;
-	SDL_Rect collider = { 0,0, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT };
-	bool hitFlame = false;
-	bool firstCollision = true;
-	std::vector<Enemy*> const enemyFirstCollision = {};
+	int GetFlamePower() const;
 private:
 	int m_srcX;
 	int	m_srcY;
@@ -40,13 +31,15 @@ private:
 	int m_flamePower;
 	int index_x;
 	int index_y;
-	Collider* m_collider;
+	bool isExploded;
+	bool hitFlame;
+	Animator animator;
 	Sound* m_bombSound;
 	SDL_Rect m_window_rect = { 0, 0, Config::BOMB_WIDTH, Config::BOMB_HEIGHT };
-	Uint32 m_delay_per_frame = 200;
-	Uint32 m_timeDropped;
-	Uint32 bombTimer = 1500;
-	Uint32 m_oldTime = 0;
-	SDL_Rect windowRect;
-	SDL_Rect textureRect;
+	int m_delay_per_frame = 200;
+	int m_timeDropped;
+	int bombTimer = 1500;
+	int m_oldTime = 0;
+	SDL_Rect windowRect{};
+	SDL_Rect textureRect{};
 };

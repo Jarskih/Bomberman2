@@ -3,16 +3,11 @@
 enum EntityType
 {
 	PLAYER,
-	EASY_ENEMY,
-	HARD_ENEMY,
+	ENEMY,
 	BLOCK,
 	BOMB,
 	FLAME,
-	FLAME_POWER_UP,
-	BOMB_POWER_UP,
-	SPEED_POWER_UP,
-	LIFE_POWER_UP,
-	EXIT_POWER_UP,
+	POWER_UP,
 };
 //  Base Class for all entity types
 class Sprite;
@@ -32,11 +27,10 @@ protected:
 	SpriteSheet* m_spriteSheet;
 	Collider* m_collider;
 	EntityType m_type;
-	int m_blockType;
-
+	int m_block_type;
 public:
+	int GetBlockType() const { return m_block_type; };
 	EntityType GetType() const { return m_type; };
-	int GetBlockType() const { return m_blockType; };
 	bool IsActive() const { return m_active; }
 	bool IsVisible() const { return m_visible; }
 	virtual ~Entity() {};

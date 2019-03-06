@@ -18,10 +18,3 @@ template <typename T, typename... Arguments> sp<T> makesp(Arguments &&... argume
 {
 	return std::make_shared<T>(std::forward<Arguments>(arguments)...);
 }
-
-template <class T> using up = std::unique_ptr<T>;
-
-template <typename T, typename... Arguments> up<T> makeunique(Arguments &&... arguments)
-{
-	return std::make_unique<T>(std::forward<Arguments>(arguments)...);
-}

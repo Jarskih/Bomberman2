@@ -33,12 +33,12 @@ namespace Helpers {
 		{
 			y = 1;
 		}
-		const float index_x = static_cast<float>(x / Config::BLOCK_WIDTH);
-		const float index_y = static_cast<float>(y / Config::BLOCK_HEIGHT);
+		const int index_x = static_cast<int>(x / Config::BLOCK_WIDTH);
+		const int index_y = static_cast<int>(y / Config::BLOCK_HEIGHT);
 
 		std::pair<int, int> blockIndexes;
-		blockIndexes.first = static_cast<int>(ceil(index_x));
-		blockIndexes.second = static_cast<int>(ceil(index_y));
+		blockIndexes.first = index_x;
+		blockIndexes.second = index_y;
 		return blockIndexes;
 	}
 

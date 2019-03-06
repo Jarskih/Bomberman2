@@ -3,9 +3,9 @@
 #include <vector>
 #include "Entity.h"
 #include "Helpers.h"
-#include "Config.h"
-#include "Block.h"
 #include "PowerUp.h"
+#include "GameState.h"
+#include "Animator.h"
 
 class Enemy;
 class SpriteSheet;
@@ -22,8 +22,7 @@ public:
 	void Update(int bombs);
 	void Render(SDL_Renderer* p_renderer) override;
 	void OnCollision(Entity* p_other) override;
-	void OnCollision(sp<PowerUp> const &p_other);
-	void OnCollision(sp<Enemy> const &p_other);
+	void OnCollision(const sp<PowerUp>& p_other);
 	void Die();
 	int GetFlamePower() const;
 	Bomb* DropBomb();
@@ -47,7 +46,7 @@ private:
 	int m_lives;
 	int m_speed_x;
 	int m_speed_y;
-	std::vector<up<Bomb>> m_bombs = {};
+	std::vector<sp<Bomb>> m_bombs = {};
 	bool m_moving = false;
 	int m_speed = 3;
 
@@ -57,23 +56,22 @@ private:
 	SDL_Scancode m_moveRight;
 	SDL_Scancode m_dropBomb;
 
-	int m_flame_power = 1;
-	int m_max_bombs = 1;
-	int m_bombs_dropped = 0;
-	int m_old_state = 0;
-	int m_state = LEFT;
+	int m_flame_power;
+	int m_max_bombs;
+	int m_bombs_dropped;
+	int m_old_state;
+	int m_state;
 
-	int m_frame = 0;
-	Uint32 m_time_died = 0;
-	Uint32 m_old_time = 0;
-	Uint32 m_delay_per_frame = 100;
+	int m_frame;
+	int m_time_died;
+	int m_old_time;
+	int m_delay_per_frame;
 
-	SDL_Rect m_window_rect = { 0, 0, Config::PLAYER_WIDTH, Config::PLAYER_HEIGHT };
-	SpriteSheet* m_spriteSheet;
+	Animator animator;
+	SDL_Rect m_window_rect;
 	SpriteSheet* m_deathSprite;
 	SpriteSheet* m_playerMoveDown;
 	SpriteSheet* m_playerMoveUp;
 	SpriteSheet* m_playerMoveLeft;
 	SpriteSheet* m_playerMoveRight;
-	int p_src_x_;
 };

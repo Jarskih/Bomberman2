@@ -3,28 +3,30 @@
 #include <map>
 #include "Entity.h"
 #include <SDL.h>
+#include "Animator.h"
 
-class Flame : Entity
+class Animator;
+class Collider;
+
+class Flame : public Entity
 {
 public:
-	Flame() = delete;
-	Flame(int x, int y, SDL_Renderer* renderer);;
-	~Flame() = default;
-	void loadTextures(std::string sprite);
-	void setTexture(SDL_Texture* texture);
-	void render(int frame);
-	void colliderResize(int x, int y, int width, int height);
-	void checkCollision() const;
-	int totalFrames = 4;
-
+	Flame(std::string filePath, int x, int y, int frames, int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH);
+	~Flame();
+	void Update() override;
+	void Render(SDL_Renderer* p_renderer) override;
+	void ColliderResize(int x, int y, int width, int height) const;
+	void OnCollision(Entity* p_other) override;
+	bool HasExploded();
 private:
-	int m_index_x = 0;
-	int m_index_y = 0;
-	SDL_Renderer* m_renderer = nullptr;
-
-	bool m_texture_loaded = false;
-	SDL_Texture* m_texture = nullptr;
-	SDL_Rect m_window_rect = {};
-	SDL_Rect m_texture_rect = {};
-	SDL_Rect m_collider = {};
+	int m_frame;
+	int m_x;
+	int m_y;
+	bool m_playedAnim;
+	Animator animator;
+	SDL_Rect m_window_rect;
+	SDL_Rect m_texture_rect;
+	Uint32 m_timeExploded;
+	Uint32 m_delayPerFrame;
+	bool m_isExploded;
 };

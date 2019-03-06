@@ -17,7 +17,9 @@
 #include "Config.h"
 
 #include "FSM.h"
-#include "TEST_STATE_1.h"
+#include "GameState.h"
+#include "GameOverState.h"
+#include "MenuState.h"
 
 int main(int ac, char** av)
 {
@@ -53,9 +55,13 @@ int main(int ac, char** av)
 		Service<SoundHandler>::Set(&soundHandler);
 
 		FSM stateMachine;
-		TEST_STATE_1 stateOne(*renderer);
+		GameState stateOne(*renderer);
+		GameOverState gameOver(*renderer);
+		MenuState menuState(*renderer);
 		stateMachine.AddState(&stateOne);
-		stateMachine.SetState(&stateOne);
+		stateMachine.AddState(&gameOver);
+		stateMachine.AddState(&menuState);
+		stateMachine.SetState(&menuState);
 
 		bool running = true;
 		while (running)

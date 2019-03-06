@@ -19,8 +19,8 @@ public:
 	void Render(SDL_Renderer* p_renderer);
 	void handleEvent(SDL_Event& event);
 
-	Block findBlockByCoordinates(int x, int y);
-	Block findBlockByIndex(int x, int y);
+	sp<Block> findBlockByCoordinates(int x, int y);
+	sp<Block> findBlockByIndex(int x, int y);
 
 	int m_score = 0;
 	int m_players = 1;
@@ -29,7 +29,7 @@ public:
 private:
 	void generateMap(int level);
 	const char* GetSpritePath(int blockType);
-	up<Block> tileSet[Config::MAX_BLOCKS_X][Config::MAX_BLOCKS_Y] = {};
+	sp<Block> tileSet[Config::MAX_BLOCKS_X][Config::MAX_BLOCKS_Y] = {};
 	Pathfinding pathfinder;
 
 	int m_size_x = Config::MAX_BLOCKS_X;

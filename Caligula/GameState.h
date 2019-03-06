@@ -26,14 +26,14 @@ class Animator;
 class GameState : public State
 {
 	SDL_Renderer* m_renderer;
-	up<Map> m_map;
-	up<Player> m_player;
+	sp<Map> m_map;
+	sp<Player> m_player;
 	int m_timer;
-	up<Block> tileSet[Config::MAX_BLOCKS_X][Config::MAX_BLOCKS_Y] = {};
-	std::vector<up<Player>> m_playerList = {};
+	sp<Block> tileSet[Config::MAX_BLOCKS_X][Config::MAX_BLOCKS_Y] = {};
+	std::vector<sp<Player>> m_playerList = {};
 	std::vector<sp<Bomb>> m_bombs;
 	std::vector<sp<EasyEnemy>> m_enemyList = {};
-	std::vector<up<PowerUp>> m_powerUps = {};
+	std::vector<sp<PowerUp>> m_powerUps = {};
 	std::vector<sp<Flame>> m_flames = {};
 	bool m_enemies_dead;
 	bool m_timeOut = false;
@@ -43,6 +43,7 @@ class GameState : public State
 	Sound* m_powerUpPickupSound;
 	Sound* m_bombSound;
 	Music* m_music;
+	int m_level;
 public:
 	GameState(SDL_Renderer& p_renderer);
 	void Enter();

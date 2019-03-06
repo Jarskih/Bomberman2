@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <SDL.h>
 
@@ -13,6 +13,7 @@ protected:
 	SDL_Rect m_bounds;
 	COLLIDERTYPE m_type;
 public:
+	void SetSize(int width, int height);
 	void SetPosition(int p_x, int p_y);
 	virtual SDL_Rect GetBounds() = 0;
 	COLLIDERTYPE GetType() { return m_type; };
@@ -27,4 +28,3 @@ public:
 	RectangleCollider(int p_x, int p_y, int p_w, int p_h);
 	~RectangleCollider();
 };
-

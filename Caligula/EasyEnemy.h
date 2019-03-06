@@ -3,6 +3,7 @@
 #include "Helpers.h"
 #include "Entity.h"
 #include "Block.h"
+#include "Config.h"
 
 class Entity;
 class Map;
@@ -11,25 +12,37 @@ class Block;
 class EasyEnemy : public Entity
 {
 public:
-	EasyEnemy(const EntityType enemy_type, const int index_x, const int index_y);;
+	EasyEnemy(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
+		int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH,
+		int p_x, int p_y);;
 	void Update() override;
 	void Render(SDL_Renderer* p_renderer) override;
 	void smartMove();
 	void die();
+	void OnCollision(Entity* other) override;
 private:
-	up<Block> m_next_block;
-	up<Block> target_block;
-	up<Block> current_block;
+	enum States
+	{
+		UP,
+		DOWN,
+		LEFT,
+		RIGHT,
+	};
 
+	int m_state;
+	int m_srcX;
+	int m_srcY;
+	int m_srcW;
+	int m_srcH;
+	SDL_Rect m_window_rect;
 
-	int m_speed_x;
-	int m_speed_y;
-	EntityType m_type;
+	sp<Block> m_next_block;
+	sp<Block> target_block;
+	sp<Block> current_block;
+
 	int m_frame = 0;
 	int m_score = 100;
-	bool m_texture_loaded = false;
-	SDL_Texture* m_texture = nullptr;
-	std::string m_sprite;
+
 	Uint32 m_time_died = 0;
 	Uint32 m_death_delay = 1500;
 	Uint32 m_decision_time = 0;
@@ -38,8 +51,10 @@ private:
 	int m_old_target_x = 0;
 	int m_old_target_y = 0;
 	int m_speed = 2;
+	int old_x;
+	int old_y;
 
-	void loadTexture(std::string sprite);
-	void decide();
-	void move();
+	void Decide();
+	void Move();
+
 };

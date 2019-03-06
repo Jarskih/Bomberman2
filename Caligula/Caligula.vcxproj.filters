@@ -96,9 +96,6 @@
     <ClCompile Include="SoundHandler.cpp">
       <Filter>Source Files\Sound</Filter>
     </ClCompile>
-    <ClCompile Include="TEST_STATE_1.cpp">
-      <Filter>Source Files\Game\GameStates</Filter>
-    </ClCompile>
     <ClCompile Include="Sound.cpp">
       <Filter>Source Files\Sound</Filter>
     </ClCompile>
@@ -150,6 +147,18 @@
     <ClCompile Include="Music.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameOverState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Source Files\Game\GameStates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -187,9 +196,6 @@
     </ClInclude>
     <ClInclude Include="State.h">
       <Filter>Header Files\FSM</Filter>
-    </ClInclude>
-    <ClInclude Include="TEST_STATE_1.h">
-      <Filter>Header Files\Game\GameStates</Filter>
     </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>Header Files\Sound</Filter>
@@ -241,6 +247,18 @@
     </ClInclude>
     <ClInclude Include="Music.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameOverState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Header Files\Game\GameStates</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

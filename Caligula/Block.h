@@ -2,6 +2,8 @@
 #include "Helpers.h"
 #include "Entity.h"
 #include <string>
+#include "Animator.h"
+class Flame;
 
 class Block : public Entity
 {
@@ -13,15 +15,10 @@ public:
 	void changeBlockType(int newType);
 	std::pair <int, int> getBlockIndex() const;
 
-
+	void OnCollision(Entity* p_other) override;
 	int GetIndexX() const;
-	int GetPositionX() const;
-	int GetPositionY() const;
 	int GetIndexY() const;
 	int GetBlockType() const;
-
-	bool HasPowerUp() const;
-	void SpawnPowerUp(int powerUpType);
 
 	// A* Pathfinding
 	int gCost() const;
@@ -32,20 +29,20 @@ public:
 	void SetParent(Block& block);
 	Block* GetParent() const;
 private:
-
+	Animator animator;
 	int m_g_cost{};
 	int m_h_cost{};
 	Block* m_parent = nullptr;
 	int m_index_x{};
 	int m_index_y{};
+	int m_timeExploded;
+	int m_delayPerFrame;
+	int m_frame;
+	bool m_exploded;
+	SDL_Rect m_window_rect;
+	Sprite* m_spriteBlock;
+	Sprite* m_spriteGrass;
 	int m_block_type;
-	bool m_block_has_power_up{};
-	int m_power_up_type{};
-	Uint32 timeExploded{};;
-	int m_frame{};
-	int m_old_block_type{};
-	bool m_texture_loaded{};
-	bool m_power_up_added{};
 
-	std::string getTexturePath() const;
+	void setDestroyed();
 };

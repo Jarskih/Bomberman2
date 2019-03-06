@@ -7,6 +7,7 @@
 #include "InputHandler.h"
 #include "Bomb.h"
 #include "Musicplayer.h"
+#include "Animator.h"
 
 Player::Player(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
 	int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH,
@@ -22,12 +23,24 @@ Player::Player(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
 	m_speed_x = 0;
 	m_speed_y = 0;
 	createSprites();
+	m_window_rect = { 0, 0, Config::PLAYER_WIDTH, Config::PLAYER_HEIGHT };
 
 	m_moveUp = SDL_SCANCODE_UP;
 	m_moveDown = SDL_SCANCODE_DOWN;
 	m_moveLeft = SDL_SCANCODE_LEFT;
 	m_moveRight = SDL_SCANCODE_RIGHT;
 	m_dropBomb = SDL_SCANCODE_SPACE;
+
+	m_flame_power = 1;
+	m_max_bombs = 1;
+	m_bombs_dropped = 0;
+	m_old_state = 0;
+	m_state = LEFT;
+
+	m_frame = 0;
+	m_time_died = 0;
+	m_old_time = 0;
+	m_delay_per_frame = 100;
 }
 
 void Player::Update()
@@ -36,8 +49,13 @@ void Player::Update()
 
 void Player::Update(int bombs)
 {
+	if (m_state == DEAD)
+	{
+		return;
+	}
 	playerController();
 	movePlayer();
+
 	m_collider->SetPosition(m_x + Config::PLAYER_WIDTH / 3, m_y + Config::PLAYER_HEIGHT / 2);
 	m_bombs_dropped = bombs;
 }
@@ -45,7 +63,27 @@ void Player::Update(int bombs)
 
 void Player::Render(SDL_Renderer* p_renderer) {
 
-	animate(p_renderer);
+	if (m_state == DEAD)
+	{
+		if (animator.PlayOnce(p_renderer, *m_deathSprite, m_delay_per_frame, m_window_rect, m_time_died))
+		{
+			m_active = false;
+		}
+	}
+	else
+	{
+		if (m_moving)
+		{
+			animator.Loop(p_renderer, *m_spriteSheet, m_delay_per_frame, m_window_rect);
+		}
+		else
+		{
+			animator.PlayCurrentFrame(p_renderer, *m_spriteSheet, m_window_rect);
+		}
+	}
+
+	m_window_rect.x = m_x;
+	m_window_rect.y = m_y;
 
 	SDL_SetRenderDrawColor(p_renderer, 255, 255, 0, 255);
 	SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
@@ -158,12 +196,12 @@ void Player::movePlayer() {
 
 void Player::OnCollision(Entity* p_other)
 {
-	if (p_other->GetType() == EASY_ENEMY)
+	if (p_other->GetType() == ENEMY || p_other->GetType() == FLAME)
 	{
 		Die();
 	}
 
-	if (p_other->GetType() == BLOCK && p_other->GetBlockType() != Config::GRASS) {
+	if (p_other->GetType() == BLOCK && p_other->GetBlockType() != Config::GRASS || p_other->GetType() == BOMB) {
 
 		m_x = m_oldX;
 		m_window_rect.x = m_x;
@@ -175,51 +213,44 @@ void Player::OnCollision(Entity* p_other)
 	}
 }
 
-void Player::OnCollision(sp<PowerUp> const &p_other)
+void Player::OnCollision(const sp<PowerUp> &p_other)
 {
-	switch (p_other->GetType())
+	switch (p_other->GetPowerUpType())
 	{
-	case FLAME_POWER_UP:
+	case PowerUp::FLAME:
 		MusicPlayer::PlaySoundFromPath("sounds/bonus_pickup.wav");
 		m_flame_power++;
 		//m_score += p_other.GetScore();
 		break;
-	case BOMB_POWER_UP:
+	case PowerUp::BOMB:
 		m_max_bombs++;
 		//m_score += p_other.GetScore();
 		break;
-	case SPEED_POWER_UP:
+	case PowerUp::SPEED:
 		MusicPlayer::PlaySoundFromPath("sounds/bonus_pickup.wav");
 		m_speed++;
 		//m_score += p_other.GetScore();
 		break;
-	case LIFE_POWER_UP:
+	case PowerUp::LIFE:
 		MusicPlayer::PlaySoundFromPath("sounds/bonus_pickup.wav");
 		m_lives++;
 		//m_score += p_other.GetScore();
 		break;
-	case EXIT_POWER_UP:
-
+	case PowerUp::EXIT:
 		break;
 	default:
 		break;
 	}
 }
 
-void Player::OnCollision(sp<Enemy> const &p_other)
-{
-	Die();
-};
-
 void Player::Die()
 {
 	if (m_state != DEAD)
 	{
 		m_time_died = SDL_GetTicks();
-		m_collider = nullptr;
+		m_collider->SetSize(0, 0);
 		m_frame = 0;
 		m_state = DEAD;
-		m_active = false;
 	}
 }
 
@@ -236,34 +267,4 @@ bool Player::CanDropBomb()
 bool Player::IsDropBombPressed()
 {
 	return Service<InputHandler>::Get()->IsKeyPressed(m_dropBomb);
-}
-
-
-void Player::animate(SDL_Renderer* p_renderer)
-{
-	if (m_state == DEAD)
-	{
-		const Uint32 currentTime = SDL_GetTicks() - m_time_died;
-		const Uint32 timeSpent = currentTime - m_old_time;
-		if (timeSpent > m_delay_per_frame)
-		{
-			m_old_time = timeSpent;
-			m_frame++;
-		}
-		if (m_frame > m_spriteSheet->GetTotalFrames())
-		{
-			return;
-		}
-	}
-	else if (m_moving) {
-		m_frame = (SDL_GetTicks() / m_delay_per_frame) % m_spriteSheet->GetTotalFrames();
-	}
-
-	m_window_rect.x = m_x;
-	m_window_rect.y = m_y;
-
-	SDL_RenderCopy(p_renderer, m_spriteSheet->GetTexture(), &m_spriteSheet->GetTextureRect(m_frame), &m_window_rect);
-
-	SDL_SetRenderDrawColor(p_renderer, 255, 255, 255, 0);
-	SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
 }

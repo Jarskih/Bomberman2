@@ -4,14 +4,24 @@
 #include "Collider.h"
 #include "Config.h"
 #include "Block.h"
+#include <iostream>
 
-Block::Block(const char* p_textureFilePath, int p_srcX, int p_srcY, int p_srcW, int p_srcH, int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH, int p_x, int p_y, int p_block_type, bool p_has_collider)
+Block::Block(const char* p_textureFilePath, int p_srcX, int p_srcY, int p_srcW, int p_srcH, int p_colliderX,
+	int p_colliderY, int p_colliderW, int p_colliderH, int p_x, int p_y, int p_block_type, bool p_has_collider)
 {
 	m_block_type = p_block_type;
 	m_type = BLOCK;
 	m_x = p_x;
 	m_y = p_y;
-	m_sprite = Service<SpriteHandler>::Get()->CreateSprite(p_textureFilePath, p_srcX, p_srcY, p_srcW, p_srcH);
+	m_spriteBlock = Service<SpriteHandler>::Get()->CreateSprite(p_textureFilePath, p_srcX, p_srcY, p_srcW, p_srcH);
+	m_spriteGrass = Service<SpriteHandler>::Get()->CreateSprite("img/grass.png", p_srcX, p_srcY, p_srcW, p_srcH);
+	m_spriteSheet = Service<SpriteHandler>::Get()->CreateSpriteSheet("img/block_breaking.png", p_srcX, p_srcY, p_srcW,
+		p_srcH, 7);
+	m_sprite = m_spriteBlock;
+	m_frame = 0;
+	m_delayPerFrame = 100;
+	m_exploded = false;
+	m_window_rect = { m_x, m_y, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT };
 	if (p_has_collider)
 	{
 		m_collider = new RectangleCollider(p_colliderX, p_colliderY, p_colliderW, p_colliderH);
@@ -23,11 +33,27 @@ Block::Block(const char* p_textureFilePath, int p_srcX, int p_srcY, int p_srcW, 
 	}
 }
 
-void Block::Render(SDL_Renderer* p_renderer) {
-	SDL_Rect dst = { m_x, m_y, m_sprite->GetArea().w, m_sprite->GetArea().h };
-	SDL_RenderCopy(p_renderer, m_sprite->GetTexture(), &m_sprite->GetArea(), &dst);
+void Block::Render(SDL_Renderer* p_renderer)
+{
+	if (m_block_type == Config::Blocks::GRASS)
+	{
+		SDL_Rect dst = { m_x, m_y, m_sprite->GetArea().w, m_sprite->GetArea().h };
+		SDL_RenderCopy(p_renderer, m_sprite->GetTexture(), &m_sprite->GetArea(), &dst);
+	}
+	else if (m_exploded)
+	{
+		if (animator.PlayOnce(p_renderer, *m_spriteSheet, m_delayPerFrame, m_window_rect, m_timeExploded))
+		{
+			changeBlockType(Config::GRASS);
+		}
+	}
+	else
+	{
+		SDL_Rect dst = { m_x, m_y, m_sprite->GetArea().w, m_sprite->GetArea().h };
+		SDL_RenderCopy(p_renderer, m_sprite->GetTexture(), &m_sprite->GetArea(), &dst);
+	}
 
-	SDL_SetRenderDrawColor(p_renderer, 0, 255, 0, 0);
+	SDL_SetRenderDrawColor(p_renderer, 0, 0, 255, 0);
 	SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
 
 	/*
@@ -76,11 +102,24 @@ void Block::Render(SDL_Renderer* p_renderer) {
 
 void Block::Update()
 {
+	if (m_exploded)
+	{
+		m_collider = new RectangleCollider(0, 0, 0, 0);
+		m_sprite = m_spriteGrass;
+	}
 }
 
-std::pair <int, int> Block::getBlockIndex() const
+std::pair<int, int> Block::getBlockIndex() const
 {
 	return Helpers::GetCurrentBlock(m_x, m_y);
+}
+
+void Block::OnCollision(Entity* p_other)
+{
+	if (p_other->GetType() == FLAME)
+	{
+		setDestroyed();
+	}
 }
 
 int Block::gCost() const
@@ -113,16 +152,6 @@ int Block::GetIndexX() const
 	return m_index_x;
 }
 
-int Block::GetPositionX() const
-{
-	return m_x;
-}
-
-int Block::GetPositionY() const
-{
-	return m_y;
-}
-
 int Block::GetIndexY() const
 {
 	return m_index_y;
@@ -138,117 +167,25 @@ void Block::SetParent(Block& block)
 	m_parent = &block;
 }
 
-bool Block::HasPowerUp() const
-{
-	return m_block_has_power_up;
-}
-
-void Block::SpawnPowerUp(int powerUpType)
-{
-	m_block_has_power_up = true;
-	m_power_up_type = powerUpType;
-}
-
 Block* Block::GetParent() const
 {
 	return m_parent;
 }
 
-std::string Block::getTexturePath() const
+void Block::setDestroyed()
 {
-	std::string texturePath;
-	switch (m_block_type) {
-	case Config::BREAKABLE:
-		texturePath = "img/block.png";
-		break;
-	case Config::NONBREAKABLE:
-		texturePath = "img/whiteBlock.png";
-		break;
-	case Config::WALL_UP:
-		texturePath = "img/wallTop.png";
-		break;
-	case Config::WALL_LEFT:
-		texturePath = "img/wallLeft.png";
-		break;
-	case Config::WALL_RIGHT:
-		texturePath = "img/wallRight.png";
-		break;
-	case Config::WALL_DOWN:
-		texturePath = "img/wallDown.png";
-		break;
-	case Config::WALL_LEFT_UP:
-		texturePath = "img/wallTopLeft.png";
-		break;
-	case Config::WALL_RIGHT_UP:
-		texturePath = "img/wallTopRight.png";
-		break;
-	case Config::WALL_LEFT_DOWN:
-		texturePath = "img/wallDown.png";
-		break;
-	case Config::WALL_RIGHT_DOWN:
-		texturePath = "img/wallDown.png";
-		break;
-	case Config::GRASS:
-		texturePath = "img/grass.png";
-		break;
-	case Config::DESTROYED:
-		texturePath = "img/block_breaking.png";
-		break;
-	default:
-		texturePath = "error";
-		break;
-	}
-
-	return texturePath;
-}
-/*
-void Block::LoadTexture() {
-	switch (m_block_type) {
-	case Config::BREAKABLE:
-		m_texture = m_textures->findTexture("block");
-		break;
-	case Config::NONBREAKABLE:
-		m_texture = m_textures->findTexture("whiteBlock");
-		break;
-	case Config::WALL_UP:
-		m_texture = m_textures->findTexture("wallTop");
-		break;
-	case Config::WALL_LEFT:
-		m_texture = m_textures->findTexture("wallLeft");
-		break;
-	case Config::WALL_RIGHT:
-		m_texture = m_textures->findTexture("wallRight");
-		break;
-	case Config::WALL_DOWN:
-		m_texture = m_textures->findTexture("wallDown");
-		break;
-	case Config::WALL_LEFT_UP:
-		m_texture = m_textures->findTexture("wallTopLeft");
-		break;
-	case Config::WALL_RIGHT_UP:
-		m_texture = m_textures->findTexture("wallTopRight");
-		break;
-	case Config::WALL_LEFT_DOWN:
-		m_texture = m_textures->findTexture("wallDown");
-		break;
-	case Config::WALL_RIGHT_DOWN:
-		m_texture = m_textures->findTexture("wallDown");
-		break;
-	case Config::GRASS:
-		m_texture = m_textures->findTexture("grass");
-		break;
-	case Config::DESTROYED:
-		m_texture = m_textures->findTexture("blockBreaking");
-		break;
-	default:
-		break;
+	if (m_block_type != Config::Blocks::DESTROYED)
+	{
+		m_timeExploded = SDL_GetTicks();
+		m_exploded = true;
+		m_block_type = Config::Blocks::DESTROYED;
 	}
 }
-*/
 
 void Block::changeBlockType(int newType)
 {
-	m_block_type = newType;
-	m_texture_loaded = false;
-	timeExploded = SDL_GetTicks();
+	if (m_block_type != newType)
+	{
+		m_block_type = newType;
+	}
 }

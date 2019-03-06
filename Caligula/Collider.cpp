@@ -1,4 +1,4 @@
-#include "Collider.h"
+﻿#include "Collider.h"
 
 SDL_Rect RectangleCollider::GetBounds()
 {
@@ -14,6 +14,12 @@ RectangleCollider::RectangleCollider(int p_x, int p_y, int p_w, int p_h)
 
 RectangleCollider::~RectangleCollider()
 {
+}
+
+void Collider::SetSize(int width, int height)
+{
+	m_bounds.w = width;
+	m_bounds.h = height;
 }
 
 void Collider::SetPosition(int p_x, int p_y)

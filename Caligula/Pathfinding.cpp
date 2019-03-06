@@ -2,7 +2,7 @@
 #include "Pathfinding.h"
 #include "Map.h"
 #include "Service.h"
-#include "TEST_STATE_1.h"
+#include "GameState.h"
 
 std::list<Block*> Pathfinding::discoverNeighbors(Block &block)
 {
@@ -21,7 +21,8 @@ std::list<Block*> Pathfinding::discoverNeighbors(Block &block)
 
 		if (checkY >= 0 && checkY < Config::MAX_BLOCKS_Y)
 		{
-			neighbors.push_front(&map->findBlockByIndex(checkX, checkY));
+			auto block = *map->findBlockByIndex(checkX, checkY);
+			neighbors.push_front(&block);
 		}
 	}
 
@@ -38,7 +39,8 @@ std::list<Block*> Pathfinding::discoverNeighbors(Block &block)
 
 		if (checkX >= 0 && checkX < Config::MAX_BLOCKS_X)
 		{
-			neighbors.push_front(&map->findBlockByIndex(checkX, checkY));
+			auto neighbor = *map->findBlockByIndex(checkX, checkY);
+			neighbors.push_front(&block);
 		}
 	}
 
