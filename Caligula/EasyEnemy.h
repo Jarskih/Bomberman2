@@ -1,14 +1,14 @@
 ﻿#pragma once
-#include <list>
 #include "Helpers.h"
 #include "Entity.h"
 #include "Block.h"
-#include "Config.h"
 #include "Bomb.h"
-#include <memory>
+#include "FSM.h"
+#include "EnemyIdleState.h"
+#include "EnemyMoveState.h"
+#include "Config.h"
 
 class Entity;
-class Map;
 class Block;
 class Animator;
 
@@ -24,45 +24,24 @@ public:
 	void OnCollision(sp<Flame>& flame);
 	void OnCollision(sp<Block>& block);
 	void OnCollision(sp<Bomb>& bomb);
-private:
-	enum States
-	{
-		UP,
-		DOWN,
-		LEFT,
-		RIGHT,
-		DEAD,
-	};
 
-	int m_state;
+private:
+	int m_x;
+	int m_y;
 	int m_srcX;
 	int m_srcY;
 	int m_srcW;
 	int m_srcH;
+	FSM stateMachine;
+	EnemyIdleState idleState = EnemyIdleState(m_x, m_y);
+	EnemyMoveState moveState = EnemyMoveState(m_x, m_y, Config::ENEMY_SPEED, Config::DECISION_DELAY);
 	SDL_Rect m_window_rect;
 	Animator animator;
-	sp<Block> m_next_block;
-	sp<Block> target_block;
-	sp<Block> current_block;
 
-	int m_frame = 0;
-	int m_score = 100;
-
-	Uint32 m_time_died;
-	Uint32 m_death_delay;
-	Uint32 m_decision_time;
-	Uint32 m_decision_delay;
-	std::list<sp<Block>> m_path{};
-	int m_old_target_x = 0;
-	int m_old_target_y = 0;
-	int m_speed = 2;
-	int old_x;
-	int old_y;
 	int m_delay_per_frame;
 	int m_animated_frames;
+	bool m_is_dead;
+	int m_time_died;
 
-	void Decide();
-	void Move();
 	void Die();
-	void smartMove();
 };

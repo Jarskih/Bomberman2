@@ -1,5 +1,10 @@
 ﻿#pragma once
 
+/*
+ * Collider.h
+ * Attached to entities for collision detection
+ */
+
 #include <SDL.h>
 
 enum COLLIDERTYPE

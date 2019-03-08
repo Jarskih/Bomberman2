@@ -34,6 +34,9 @@ struct Config
 	static const int ACTOR_HEIGHT = 80;
 	static const int PADDING_X = Config::BLOCK_WIDTH / 8;
 	static const int PADDING_Y = Config::BLOCK_HEIGHT / 8;
+	static const int DECISION_DELAY = 5000;
+	static const int ENEMY_SPEED = 2;
+	static const int IDLE_DELAY = 100;
 
 	// Bomb
 	static const int BOMB_WIDTH = Config::BLOCK_WIDTH;
@@ -47,6 +50,14 @@ struct Config
 	static const int ENEMY_DELAY_PER_FRAME = 200;
 
 	static const int POWERUP_SCORE = 1000;
+	static const int HUD_FONT_SIZE = 24;
+
+	enum Event {
+		EXTRA_LIFE,
+		EXTRA_FLAME,
+		EXTRA_SPEED,
+		EXTRA_BOMB
+	};
 
 	enum Blocks
 	{

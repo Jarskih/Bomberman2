@@ -1,11 +1,11 @@
 ﻿#pragma once
 #include <SDL.h>
-#include <vector>
 #include "Entity.h"
 #include "Helpers.h"
 #include "PowerUp.h"
 #include "GameState.h"
 #include "Animator.h"
+#include "Subject.h"
 
 class EasyEnemy;
 class SpriteSheet;
@@ -19,6 +19,8 @@ public:
 		int m_lives);
 	~Player();
 	void Update() override;
+	void AddObserver(Observer* observer);
+	void RemoveObserver(Observer* observer);
 	void Update(int bombs);
 	void Render(SDL_Renderer* p_renderer) override;
 	void OnCollision(sp<PowerUp>& powerUp);
@@ -26,9 +28,9 @@ public:
 	void OnCollision(sp<EasyEnemy>& enemy);
 	void OnCollision(sp<Block>& block);
 	void OnCollision(sp<Bomb>& bomb);
+	int GetLives();
 	void Die();
 	int GetFlamePower() const;
-	Bomb* DropBomb();
 	bool CanDropBomb();
 	bool IsDropBombPressed();
 	bool HasExited() const;
@@ -38,7 +40,6 @@ private:
 	void createSprites();
 	void playerController();
 	void movePlayer();
-	void animate(SDL_Renderer* p_renderer);
 
 	int m_oldX;
 	int m_oldY;
@@ -48,10 +49,8 @@ private:
 	int m_srcH;
 
 	bool m_can_exit;
-	int m_lives;
 	int m_speed_x;
 	int m_speed_y;
-	std::vector<sp<Bomb>> m_bombs = {};
 	bool m_moving = false;
 	int m_speed = 3;
 
@@ -72,6 +71,7 @@ private:
 	int m_time_died;
 	int m_old_time;
 	int m_delay_per_frame;
+	int m_lives;
 
 	Animator animator;
 	SDL_Rect m_window_rect;
@@ -81,4 +81,5 @@ private:
 	SpriteSheet* m_playerMoveLeft;
 	SpriteSheet* m_playerMoveRight;
 	Sound* m_sound;
+	Subject subject;
 };

@@ -3,6 +3,7 @@
 #pragma comment(lib, "../Dependencies/SDL2/lib/x64/SDL2main.lib")
 #pragma comment(lib, "../Dependencies/SDL2_mixer/lib/x64/SDL2_mixer.lib")
 #pragma comment(lib, "../Dependencies/SDL2_image/lib/x64/SDL2_image.lib")
+#pragma comment(lib, "../Dependencies/SDL2_ttf/lib/x64/SDL2_ttf.lib")
 
 #include <SDL.h>
 #include <SDL_mixer.h>
@@ -20,6 +21,7 @@
 #include "GameState.h"
 #include "GameOverState.h"
 #include "MenuState.h"
+#include "TextHandler.h"
 
 int main(int ac, char** av)
 {
@@ -35,7 +37,12 @@ int main(int ac, char** av)
 	if (IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) == 0)
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not initialize IMG: %s", IMG_GetError());
 
-	SDL_Window* window = SDL_CreateWindow("Pong", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT, 0);
+	if (TTF_Init() == -1)
+	{
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+	}
+
+	SDL_Window* window = SDL_CreateWindow("Bomberman v2", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT, 0);
 	if (window == nullptr)
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not create SDL_Window: %s", SDL_GetError());
 
@@ -45,11 +52,13 @@ int main(int ac, char** av)
 
 	{ // Scope to add limited lifetime for out handlers and game loop
 		SpriteHandler spriteHandler(renderer);
+		TextHandler textHandler(renderer);
 		CollisionHandler collisionHandler;
 		InputHandler inputHandler;
 		SoundHandler soundHandler;
 
 		Service<SpriteHandler>::Set(&spriteHandler);
+		Service<TextHandler>::Set(&textHandler);
 		Service<CollisionHandler>::Set(&collisionHandler);
 		Service<InputHandler>::Set(&inputHandler);
 		Service<SoundHandler>::Set(&soundHandler);
@@ -91,6 +100,8 @@ int main(int ac, char** av)
 
 	if (window != nullptr)
 		SDL_DestroyWindow(window);
+
+	TTF_Quit();
 
 	IMG_Quit();
 

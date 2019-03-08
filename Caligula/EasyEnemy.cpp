@@ -1,18 +1,14 @@
 ﻿#include "EasyEnemy.h"
 #include "Map.h"
 #include "Service.h"
-#include "State.h"
-#include "Pathfinding.h"
 #include "SpriteHandler.h"
 #include "Collider.h"
 #include "Player.h"
 
 EasyEnemy::EasyEnemy(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
 	int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH,
-	int p_x, int p_y) : m_srcX(p_srcX), m_srcY(p_srcY), m_srcW(p_srcW), m_srcH(p_srcH)
+	int p_x, int p_y) : m_x(p_x), m_y(p_y), m_srcX(p_srcX), m_srcY(p_srcY), m_srcW(p_srcW), m_srcH(p_srcH)
 {
-	m_x = p_x;
-	m_y = p_y;
 	m_type = ENEMY;
 	m_active = true;
 	m_visible = true;
@@ -20,62 +16,44 @@ EasyEnemy::EasyEnemy(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
 	m_spriteSheet = Service<SpriteHandler>::Get()->CreateSpriteSheet("img/easy_enemy.png", m_srcX, m_srcY, m_srcW,
 		m_srcH, 6);
 	m_window_rect = { 0, 0, m_srcH, m_srcW };
-
-	m_state = DOWN;
-	m_speed = 1;
-	m_decision_delay = 5000;
 	m_delay_per_frame = 200;
 	m_animated_frames = 4;
+	m_is_dead = false;
+	m_time_died = 0;
 
-	/*
-	if (m_type == HARD_ENEMY)
-	{
-		m_speed = 3;
-		m_decision_delay = 10;
-	}
-	*/
+	stateMachine.AddState(&idleState);
+	stateMachine.AddState(&moveState);
+	stateMachine.SetState(&idleState);
 }
 
 EasyEnemy::~EasyEnemy()
 {
 	SDL_Log("EasyEnemy::~EasyEnemy");
 	m_collider = nullptr;
+	m_sprite = nullptr;
+	m_spriteSheet = nullptr;
 }
 
 void EasyEnemy::Update()
 {
-	if (m_state == DEAD)
+	stateMachine.Update();
+	m_x = moveState.GetX();
+	m_y = moveState.GetY();
+
+	if (m_is_dead)
 	{
 		m_active = false;
 		m_collider->SetSize(0, 0);
 	}
 
-	// Add delay to decisions to change direction and stop A* from overshooting the target block
-	if (SDL_GetTicks() - m_decision_time > m_decision_delay)
-	{
-		Decide();
-	}
-
-	Move();
-
-	/*
-	// A* pathfinding
-	if (m_type == HARD_ENEMY)
-	{
-		smartMove();
-	}
-
-	// Random movement
-	if (m_type == EASY_ENEMY)
-	{
-		Move();
-	}
-	*/
+	m_window_rect.x = m_x;
+	m_window_rect.y = m_y;
+	m_collider->SetPosition(m_x + Config::PADDING_X, m_y + Config::PADDING_Y);
 }
 
 void EasyEnemy::Render(SDL_Renderer* p_renderer)
 {
-	if (m_state == DEAD) {
+	if (m_is_dead) {
 		if (animator.PlayOnce(p_renderer, *m_spriteSheet, m_delay_per_frame, m_window_rect, m_time_died))
 		{
 			m_active = false;
@@ -85,128 +63,6 @@ void EasyEnemy::Render(SDL_Renderer* p_renderer)
 	{
 		animator.Loop(p_renderer, *m_spriteSheet, m_delay_per_frame, m_window_rect, m_animated_frames);
 	}
-
-	m_window_rect.x = m_x;
-	m_window_rect.y = m_y;
-
-
-	//SDL_SetRenderDrawColor(p_renderer, 255, 255, 255, 0);
-	//SDL_RenderDrawRect(p_renderer, &m_collider->GetBounds());
-}
-
-void EasyEnemy::Decide()
-{
-	/*
-	if (m_type == HARD_ENEMY)
-	{
-		auto map = Service<Map>::Get();
-		//const auto player = map->m_playerList.front();
-		//target_block = map->findBlockByCoordinates(player->getPositionX(), player->getPositionY());
-		current_block = map->findBlockByCoordinates(m_x, m_y);
-
-		// Only get new path if target block has changed
-		if (m_old_target_x != target_block->GetPositionX() || m_old_target_y != target_block->GetPositionY())
-		{
-			m_path = Pathfinding::calculatePath(target_block, current_block);
-		}
-
-		m_decision_time = SDL_GetTicks();
-		m_old_target_x = target_block->GetPositionX();
-		m_old_target_y = target_block->GetPositionY();
-	}
-	*/
-
-	const int random = rand() % 12;
-
-	switch (m_state)
-	{
-	case UP:
-		if (random < 4)
-		{
-			m_state = LEFT;
-		}
-		else if (random > 3 && random < 9)
-		{
-			m_state = RIGHT;
-		}
-		else
-		{
-			m_state = DOWN;
-		}
-		break;
-	case DOWN:
-		if (random < 4)
-		{
-			m_state = LEFT;
-		}
-		else if (random > 3 && random < 9)
-		{
-			m_state = RIGHT;
-		}
-		else
-		{
-			m_state = UP;
-		}
-		break;
-	case LEFT:
-		if (random < 4)
-		{
-			m_state = UP;
-		}
-		else if (random > 3 && random < 9)
-		{
-			m_state = DOWN;
-		}
-		else
-		{
-			m_state = RIGHT;
-		}
-		break;
-	case RIGHT:
-		if (random < 4)
-		{
-			m_state = UP;
-		}
-		else if (random > 3 && random < 9)
-		{
-			m_state = DOWN;
-		}
-		else
-		{
-			m_state = LEFT;
-		}
-		break;
-	default:
-		break;
-	}
-
-	m_decision_time = SDL_GetTicks();
-
-}
-
-void EasyEnemy::Move()
-{
-	old_x = m_x;
-	old_y = m_y;
-	switch (m_state) {
-	case UP:
-		m_y -= m_speed;
-		break;
-	case DOWN:
-		m_y += m_speed;
-		break;
-	case LEFT:
-		m_x -= m_speed;
-		break;
-	case RIGHT:
-		m_x += m_speed;
-		break;
-	default:
-		break;
-	}
-	m_window_rect.x = m_x;
-	m_window_rect.y = m_y;
-	m_collider->SetPosition(m_x + Config::PADDING_X, m_y + Config::PADDING_Y);
 }
 
 void EasyEnemy::OnCollision(sp<Flame> &flame) {
@@ -214,122 +70,24 @@ void EasyEnemy::OnCollision(sp<Flame> &flame) {
 }
 
 void EasyEnemy::OnCollision(sp<Block> &block) {
-	m_x = old_x;
-	m_window_rect.x = m_x;
-
-	m_y = old_y;
-	m_window_rect.y = m_y;
-
+	stateMachine.SetState(&idleState);
 	m_collider->SetPosition(m_x + Config::PADDING_X, m_y + Config::PADDING_Y);
-	Decide();
+	m_window_rect.x = m_x;
+	m_window_rect.y = m_y;
 }
 
 void EasyEnemy::OnCollision(sp<Bomb> &bomb)
 {
-	m_x = old_x;
-	m_window_rect.x = m_x;
-
-	m_y = old_y;
-	m_window_rect.y = m_y;
-
+	stateMachine.SetState(&idleState);
 	m_collider->SetPosition(m_x + Config::PADDING_X, m_y + Config::PADDING_Y);
-	Decide();
-}
-
-void EasyEnemy::smartMove()
-{
-	/*
-	auto map = Service<Map>::Get();
-	const int oldX = m_x;
-	const int oldY = m_y;
-	bool colliding = false;
-
-
-	if (!m_path.empty())
-	{
-		const auto nextBlockCoordinates = Helpers::GetBlockCenter(m_next_block->GetPositionX(), m_next_block->GetPositionY());
-
-		m_speed_x = 0;
-		m_speed_y = 0;
-
-		const int delta_x = abs(m_next_block->GetPositionX() - current_block->GetPositionY());
-		const int delta_y = abs(m_next_block->GetPositionX() - current_block->GetPositionY());
-
-		if (delta_x >= delta_y) {
-
-			if (m_x > nextBlockCoordinates.first)
-			{
-				m_speed_x -= m_speed;
-			}
-			else
-			{
-				m_speed_x += m_speed;
-			}
-		}
-		else
-		{
-			if (m_y > nextBlockCoordinates.second)
-			{
-				m_speed_y -= m_speed;
-			}
-			else
-			{
-				m_speed_y += m_speed;
-			}
-		}
-		m_y += static_cast<int>(m_speed_y);
-		m_x += static_cast<int>(m_speed_x);
-	}
-
-	m_windowRect.x = m_x;
-	m_collider.x = m_x + Config::PADDING_X;
-	m_windowRect.y = m_y;
-	m_collider.y = m_y + Config::PADDING_Y;
-
-	for (const auto& player : map->m_playerList)
-	{
-		for (const auto& bomb : player->m_bombs)
-		{
-			if (Helpers::CheckCollision(m_collider, bomb->collider))
-			{
-				colliding = true;
-				break;
-			}
-		}
-	}
-	if (!colliding)
-	{
-		for (auto& x : map->tileSet)
-		{
-			for (const auto& y : x)
-			{
-				if (y->GetBlockType() != Config::GRASS && Helpers::CheckCollision(m_collider, *y->GetCollider()))
-				{
-					colliding = true;
-					break;
-				}
-			}
-		}
-	}
-
-	if (colliding)
-	{
-		m_x = oldX;
-		m_windowRect.x = m_x;
-		m_collider.x = m_x + Config::PADDING_X;;
-
-		m_y = oldY;
-		m_windowRect.y = m_y;
-		m_collider.y = m_y + Config::PADDING_Y;
-	}
-*/
+	m_window_rect.x = m_x;
+	m_window_rect.y = m_y;
 }
 
 void EasyEnemy::Die()
 {
-	m_time_died = SDL_GetTicks();
-	if (m_state != DEAD)
-	{
-		m_state = DEAD;
+	if (!m_is_dead)
+		m_time_died = SDL_GetTicks(); {
+		m_is_dead = true;
 	}
 }

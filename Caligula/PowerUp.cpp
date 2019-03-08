@@ -6,7 +6,7 @@
 
 PowerUp::PowerUp(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
 	int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH,
-	int p_x, int p_y, int p_powerUpType) : m_srcX(p_srcX), m_srcY(p_srcY), m_srcH(p_srcH), m_srcW(p_srcW), m_score(Config::POWERUP_SCORE),
+	int p_x, int p_y, int p_powerUpType) : m_srcX(p_srcX), m_srcY(p_srcY), m_srcH(p_srcH), m_srcW(p_srcW),
 	m_powerUpType(p_powerUpType)
 {
 	m_x = p_x;
@@ -22,25 +22,37 @@ PowerUp::PowerUp(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
 	m_index_y = Helpers::GetCurrentBlock(m_x, m_y).second;
 	m_visible = false;
 	animator = new Animator(5);
+	m_exit_open = false;
 }
 
 PowerUp::~PowerUp()
 {
 	animator = nullptr;
+	m_spriteSheet = nullptr;
+	m_sprite = nullptr;
 }
 
 void PowerUp::Update()
 {
+};
 
+
+void PowerUp::Update(bool p_exit_open)
+{
+	m_exit_open = p_exit_open;
 };
 
 void PowerUp::Render(SDL_Renderer* p_renderer)
 {
 	if (m_visible)
 	{
-		if (m_exit_open && m_powerUpType == EXIT)
+		if (m_powerUpType == EXIT && !m_exit_open)
 		{
-			animator->PlayOneFrame(p_renderer, *m_spriteSheet, m_window_rect, 0);
+			animator->PlayOneFrame(p_renderer,
+				*m_spriteSheet,
+				m_window_rect,
+				0,
+				m_powerUpType);
 		}
 		else
 		{

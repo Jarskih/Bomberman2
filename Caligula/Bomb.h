@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "Config.h"
 #include "Entity.h"
 #include "Sound.h"
 #include "Animator.h"

@@ -15,8 +15,6 @@ class SpriteHandler
 	std::vector<Sprite*> m_sprites;
 	std::vector<SpriteSheet*> m_spriteSheets;
 
-	//TODO: Extend with possibility to load same file
-	//std::map<const char*, std::vector<SDL_Texture*, SDL_Rect>> m_textures; 
 public:
 	SpriteHandler(SDL_Renderer* p_renderer);
 	~SpriteHandler();

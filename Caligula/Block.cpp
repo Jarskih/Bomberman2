@@ -22,6 +22,7 @@ Block::Block(const char* p_textureFilePath, int p_srcX, int p_srcY, int p_srcW, 
 	m_frame = 0;
 	m_delayPerFrame = 100;
 	m_exploded = false;
+	m_blockChanged = false;
 	m_window_rect = { m_x, m_y, Config::BLOCK_WIDTH, Config::BLOCK_HEIGHT };
 	if (p_has_collider)
 	{
@@ -37,6 +38,10 @@ Block::Block(const char* p_textureFilePath, int p_srcX, int p_srcY, int p_srcW, 
 Block::~Block()
 {
 	m_collider = nullptr;
+	m_sprite = nullptr;
+	m_spriteBlock = nullptr;
+	m_spriteSheet = nullptr;
+	m_spriteGrass = nullptr;
 }
 
 void Block::Render(SDL_Renderer* p_renderer)
@@ -62,8 +67,9 @@ void Block::Render(SDL_Renderer* p_renderer)
 
 void Block::Update()
 {
-	if (m_exploded)
+	if (m_exploded && !m_blockChanged)
 	{
+		m_blockChanged = true;
 		m_collider = new RectangleCollider(0, 0, 0, 0);
 		m_sprite = m_spriteGrass;
 	}

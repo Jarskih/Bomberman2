@@ -19,8 +19,8 @@ SDL_Rect SpriteSheet::GetTextureRect(int p_frame, int row, int rows)
 
 	if (row != -1)
 	{
-		m_texture_rect.x = row * (m_texture_rect.w / rows);
 		m_texture_rect.w /= rows;
+		m_texture_rect.x = row * m_texture_rect.w;
 	}
 
 	return m_texture_rect;

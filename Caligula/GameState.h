@@ -1,5 +1,12 @@
 ﻿#pragma once
 
+/*
+ * GameState.h
+ *	Handles updating all entities and map.
+ *	Renders everything to the screen.
+ *	Handles memory for active entities.
+ */
+
 #include "State.h"
 #include "Helpers.h"
 #include "Config.h"
@@ -11,6 +18,8 @@
 #include "PowerUp.h"
 #include "SoundHandler.h"
 #include "Player.h"
+#include "Hud.h"
+#include "Stats.h"
 
 struct SDL_Renderer;
 class Block;
@@ -35,9 +44,11 @@ class GameState : public State
 	std::vector<sp<EasyEnemy>> m_enemyList = {};
 	std::vector<sp<PowerUp>> m_powerUps = {};
 	std::vector<sp<Flame>> m_flames = {};
+	Hud* m_hud;
 
 	Music* m_music;
 	int m_level;
+	Stats stats;
 public:
 	GameState(SDL_Renderer& p_renderer);
 	void Enter() override;
@@ -50,16 +61,12 @@ public:
 	void UpdateEntities();
 	void UpdateFlameList();
 	void Exit() override;
-
 	void CheckCollisions() const;
 	bool checkWinCondition();
-
 	bool CanSpawnFlame(int index_x, int index_y);
 	void SpawnFlames(int p_x, int p_y, int flamePower);
-
 	void spawnEnemies(int number, int enemyType);
 	sp<Block>  findRandomGrassBlock() const;
-	/// void addPowerUp(int index_x, int index_y, int powerUpType);
 	void spawnEnemiesAtStart(int enemies);
 	void spawnPowerUps();
 	bool hasPowerUp(int index_x, int index_y);

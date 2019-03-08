@@ -4,6 +4,11 @@
 #include <vector>
 #include "Music.h"
 
+/*
+ * SoundHandler.h
+ * Creates music and sounds from file path
+ */
+
 struct Mix_Chunk;
 class Sound;
 class Music;

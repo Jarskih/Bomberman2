@@ -6,7 +6,6 @@
 #include "InputHandler.h"
 #include "Bomb.h"
 #include "Animator.h"
-#include "Musicplayer.h"
 
 Player::Player(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
 	int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH,
@@ -54,6 +53,17 @@ Player::~Player()
 void Player::Update()
 {
 }
+
+void Player::AddObserver(Observer* observer)
+{
+	subject.addObserver(observer);
+}
+
+void Player::RemoveObserver(Observer* observer)
+{
+	subject.removeObserver(observer);
+}
+
 
 void Player::Update(int bombs)
 {
@@ -222,6 +232,11 @@ void Player::OnCollision(sp<Bomb> &bomb) {
 	m_collider->SetPosition(m_x + Config::PLAYER_WIDTH / 3, m_y + Config::PLAYER_HEIGHT / 2);
 }
 
+int Player::GetLives()
+{
+	return m_lives;
+}
+
 void Player::OnCollision(sp<PowerUp> &powerUp)
 {
 	switch (powerUp->GetPowerUpType())
@@ -229,18 +244,22 @@ void Player::OnCollision(sp<PowerUp> &powerUp)
 	case PowerUp::FLAME:
 		m_sound->Play(0);
 		m_flame_power++;
+		subject.notify(*this, Config::EXTRA_FLAME);
 		break;
 	case PowerUp::BOMB:
 		m_sound->Play(0);
 		m_max_bombs++;
+		subject.notify(*this, Config::EXTRA_BOMB);
 		break;
 	case PowerUp::SPEED:
 		m_sound->Play(0);
 		m_speed++;
+		subject.notify(*this, Config::EXTRA_SPEED);
 		break;
 	case PowerUp::LIFE:
 		m_sound->Play(0);
 		m_lives++;
+		subject.notify(*this, Config::EXTRA_LIFE);
 		break;
 	case PowerUp::EXIT:
 		if (m_can_exit)

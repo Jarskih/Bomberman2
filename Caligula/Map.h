@@ -5,6 +5,13 @@
 #include "Block.h"
 #include "Pathfinding.h"
 
+/*
+ *	Map.h
+ * Generates level from the asset files
+ * Fixed grid size because of the asset files. Could be extended to handle different level sizes
+ *
+ */
+
 class Map
 {
 public:

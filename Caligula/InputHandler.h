@@ -1,4 +1,10 @@
-#pragma once
+﻿#pragma once
+
+/*
+ *	InputHandler.h
+ *	Gets each button state and mouse location
+ *
+ */
 
 #include "Mouse.h"
 #include "Keyboard.h"

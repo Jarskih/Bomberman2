@@ -1,5 +1,10 @@
-#pragma once
+﻿#pragma once
 #include <SDL_scancode.h>
+
+/*
+ *	Keyboard.h
+ *	Check if keys are pressed
+ */
 
 class Keyboard
 {

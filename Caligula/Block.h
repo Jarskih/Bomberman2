@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Helpers.h"
 #include "Entity.h"
-#include <string>
 #include "Animator.h"
 class Flame;
 
@@ -44,6 +43,7 @@ private:
 	Sprite* m_spriteBlock;
 	Sprite* m_spriteGrass;
 	int m_block_type;
+	bool m_blockChanged;
 
 	void setDestroyed();
 };

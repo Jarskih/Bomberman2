@@ -148,16 +148,18 @@
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Bomb.cpp" />
     <ClCompile Include="EasyEnemy.cpp" />
+    <ClCompile Include="EnemyFleeState.cpp" />
+    <ClCompile Include="EnemyIdleState.cpp" />
+    <ClCompile Include="EnemyMoveState.cpp" />
     <ClCompile Include="Flame.cpp" />
+    <ClCompile Include="Font.cpp" />
     <ClCompile Include="GameOverState.cpp" />
-    <ClCompile Include="GUIArrow.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Hud.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Music.cpp" />
-    <ClCompile Include="MusicPlayer.cpp" />
     <ClCompile Include="Pathfinding.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PowerUp.cpp" />
@@ -173,6 +175,9 @@
     <ClCompile Include="SpriteHandler.cpp" />
     <ClCompile Include="SpriteSheet.cpp" />
     <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="Stats.cpp" />
+    <ClCompile Include="Subject.cpp" />
+    <ClCompile Include="TextHandler.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -181,15 +186,18 @@
     <ClInclude Include="Bomb.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="EasyEnemy.h" />
+    <ClInclude Include="EnemyFleeState.h" />
+    <ClInclude Include="EnemyIdleState.h" />
+    <ClInclude Include="EnemyMoveState.h" />
     <ClInclude Include="Flame.h" />
+    <ClInclude Include="Font.h" />
     <ClInclude Include="GameOverState.h" />
-    <ClInclude Include="GUIArrow.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Hud.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="Music.h" />
-    <ClInclude Include="MusicPlayer.h" />
+    <ClInclude Include="Observer.h" />
     <ClInclude Include="Pathfinding.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PowerUp.h" />
@@ -200,6 +208,7 @@
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="Rendering.h" />
     <ClInclude Include="Service.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundHandler.h" />
@@ -208,6 +217,9 @@
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="Stats.h" />
+    <ClInclude Include="Subject.h" />
+    <ClInclude Include="TextHandler.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

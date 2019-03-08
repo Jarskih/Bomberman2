@@ -1,4 +1,9 @@
-#pragma once
+﻿#pragma once
+
+/*
+ * FSM.h
+ * Handles switching, adding and removing states.
+ */
 
 #include <vector>
 #include <string>

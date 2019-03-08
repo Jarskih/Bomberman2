@@ -1,4 +1,9 @@
-#pragma once
+﻿#pragma once
+
+/*
+ * CollisionHandler.h
+ * Simple axis aligned bounding box collision detection
+ */
 
 class Collider;
 class RectangleCollider;
@@ -9,5 +14,3 @@ class CollisionHandler
 public:
 	bool IsColliding(Collider* p_lhs, Collider* p_rhs); // Axis Aligned Bounding Box (AABB)
 };
-
-

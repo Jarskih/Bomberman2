@@ -1,4 +1,9 @@
-#pragma once
+﻿#pragma once
+
+/*
+ * Mouse.h
+ * Get mouse location and which button is pressed
+ */
 
 #include <SDL_mouse.h>
 

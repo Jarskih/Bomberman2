@@ -4,6 +4,7 @@
 #include "Collider.h"
 #include "Block.h"
 #include "SoundHandler.h"
+#include "Config.h"
 
 Bomb::Bomb(int p_srcX, int p_srcY, int p_srcW, int p_srcH,
 	int p_colliderX, int p_colliderY, int p_colliderW, int p_colliderH,
@@ -30,6 +31,8 @@ Bomb::~Bomb()
 	SDL_Log("Bomb::~Bomb");
 	m_bombSound->Play(0);
 	m_collider = nullptr;
+	m_sprite = nullptr;
+	m_spriteSheet = nullptr;
 }
 
 void Bomb::Update()

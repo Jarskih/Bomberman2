@@ -7,6 +7,7 @@ Animator::Animator(int p_rows)
 	m_frame = 0;
 	m_timeSinceLastFrame = 0;
 	m_rows = p_rows;
+	m_animStarted = false;
 }
 
 Animator::~Animator()
@@ -57,6 +58,7 @@ bool Animator::PlayOnce(SDL_Renderer* p_renderer, SpriteSheet &p_spriteSheet, in
 		}
 		else
 		{
+			m_animStarted = false;
 			return true;
 		}
 	}
@@ -67,7 +69,7 @@ bool Animator::PlayOnce(SDL_Renderer* p_renderer, SpriteSheet &p_spriteSheet, in
 	return false;
 }
 
-void Animator::PlayOneFrame(SDL_Renderer* p_renderer, SpriteSheet &p_spriteSheet, SDL_Rect p_window_rect, int p_frame)
+void Animator::PlayOneFrame(SDL_Renderer* p_renderer, SpriteSheet &p_spriteSheet, SDL_Rect p_window_rect, int p_frame, int p_row)
 {
 	if (p_renderer != nullptr)
 	{
@@ -75,7 +77,7 @@ void Animator::PlayOneFrame(SDL_Renderer* p_renderer, SpriteSheet &p_spriteSheet
 		{
 			p_frame = 1;
 		}
-		SDL_RenderCopy(p_renderer, p_spriteSheet.GetTexture(), &p_spriteSheet.GetTextureRect(p_frame), &p_window_rect);
+		SDL_RenderCopy(p_renderer, p_spriteSheet.GetTexture(), &p_spriteSheet.GetTextureRect(p_frame, p_row, m_rows), &p_window_rect);
 	}
 	else
 	{

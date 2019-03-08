@@ -1,5 +1,12 @@
 ﻿#pragma once 
 
+/*
+ * Entity.h
+ * Base class for entities
+ * Holds colliders and sprites
+ * Has entity type which is used for detecting what entity is colliding with
+ */
+
 enum EntityType
 {
 	PLAYER,

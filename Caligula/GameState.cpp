@@ -2,9 +2,6 @@
 #include "Service.h"
 #include "SoundHandler.h"
 #include "CollisionHandler.h"
-#include "InputHandler.h"
-#include "Sound.h"
-#include "Music.h"
 #include <iostream>
 #include "Config.h"
 #include "Map.h"
@@ -17,6 +14,7 @@ GameState::GameState(SDL_Renderer& p_renderer) : m_renderer(&p_renderer)
 	m_music = Service<SoundHandler>::Get()->CreateMusic("sounds/music.mp3");
 	m_name = "GAME_STATE";
 	m_level = 1;
+	stats = Stats(Config::STARTING_LIVES, 0, m_level);
 }
 
 void GameState::Enter()
@@ -24,7 +22,6 @@ void GameState::Enter()
 	std::cout << "GameState::Enter: Creating level" << std::endl;
 
 	m_map = makesp<Map>(m_level);
-	Service<sp<Map>>::Set(&m_map);
 
 	m_player = makesp<Player>(0, 0, Config::PLAYER_WIDTH, Config::PLAYER_HEIGHT,
 		Config::PLAYER_COLLIDER_X, Config::PLAYER_COLLIDER_Y, Config::ENTILY_COLLIDER_WIDTH, Config::ENTITY_COLLIDER_HEIGHT,
@@ -34,17 +31,31 @@ void GameState::Enter()
 	spawnPowerUps();
 	spawnEnemiesAtStart(Config::NUMBER_OF_ENEMIES);
 
+	m_hud = new Hud(0, 0, Config::SCREEN_WIDTH, Config::BLOCK_HEIGHT, stats.score, stats.lives);
+
+	m_player->AddObserver(m_hud);
+	m_player->AddObserver(&stats);
+
 	std::cout << "GameState::Enter: Finished creating level and spawned entities" << std::endl;
 
-	// TODO enable music
-	// m_music->Play(-1);
+	m_music->Play(-1);
 }
 
 bool GameState::Update()
 {
 	if (checkLoseCondition())
 	{
-		m_nextState = "GAME_OVER_STATE";
+		if (stats.lives <= 0)
+		{
+			m_nextState = "GAME_OVER_STATE";
+			stats.lives = Config::STARTING_LIVES;
+			stats.score = 0;
+		}
+		else
+		{
+			m_nextState = "GAME_STATE";
+			stats.lives--;
+		}
 		return false;
 	}
 	if (checkWinCondition())
@@ -74,6 +85,8 @@ bool GameState::Update()
 	}
 
 	m_map->Render(m_renderer);
+
+	m_hud->Render(m_renderer);
 
 	for (const auto &bomb : m_bombs)
 	{
@@ -105,11 +118,12 @@ bool GameState::Update()
 void GameState::Exit()
 {
 	std::cout << "GameState::Exit" << std::endl;
+	m_map = nullptr;
 	m_player = nullptr;
 	m_enemyList.clear();
 	m_bombs.clear();
-	m_map = nullptr;
 	m_flames.clear();
+	m_powerUps.clear();
 }
 
 bool GameState::checkLoseCondition() const
@@ -124,6 +138,7 @@ void GameState::UpdateEntities()
 		m_player->AbleToExit(true);
 	}
 
+	m_hud->Update();
 	m_map->Update();
 
 	for (const auto& enemy : m_enemyList)
@@ -138,7 +153,7 @@ void GameState::UpdateEntities()
 	{
 		if (powerUp->IsActive())
 		{
-			powerUp->Update();
+			powerUp->Update(isExitOpen());
 		}
 	}
 
@@ -281,14 +296,6 @@ void GameState::CheckCollisions() const
 			{
 				enemy->OnCollision(bomb);
 			}
-
-		/*
-		if (Service<CollisionHandler>::Get()->IsColliding(bomb->GetCollider(), m_player->GetCollider()))
-		{
-			auto bombRef = *bomb;
-			m_player->OnCollision(&bombRef);
-		}
-		*/
 	}
 
 	// Flames
@@ -331,8 +338,10 @@ bool GameState::checkWinCondition()
 {
 	if (isExitOpen())
 	{
-		m_player->HasExited();
-		return true;
+		if (m_player->HasExited())
+		{
+			return true;
+		}
 	}
 	return false;
 }
