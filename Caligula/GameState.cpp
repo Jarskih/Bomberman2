@@ -74,8 +74,8 @@ bool GameState::Update()
 		{
 			if (m_player->CanDropBomb())
 			{
-				const std::pair<int, int> currentBlockIndex = Helpers::GetCurrentBlock(m_player->GetPositionX() + Config::BLOCK_WIDTH, m_player->GetPositionY() + Config::BLOCK_HEIGHT);
-				std::pair<int, int> blockCenter = Helpers::GetBlockCenter(currentBlockIndex.first, currentBlockIndex.second);
+				const std::pair<int, int> currentBlockIndex = Map::GetBlockIndicesFromCoords(m_player->GetPositionX() + Config::BLOCK_WIDTH, m_player->GetPositionY() + Config::BLOCK_HEIGHT);
+				std::pair<int, int> blockCenter = Map::GetBlockCenterFromIndices(currentBlockIndex.first, currentBlockIndex.second);
 
 				m_bombs.push_back(makesp<Bomb>(0, 0, Config::BOMB_WIDTH, Config::BOMB_HEIGHT,
 					Config::BOMB_WIDTH, Config::BOMB_HEIGHT, Config::BOMB_WIDTH, Config::BOMB_HEIGHT,
@@ -207,8 +207,8 @@ void GameState::UpdateBombList()
 		}
 		else
 		{
-			auto currentBlock = Helpers::GetCurrentBlock(bomb->GetPositionX(), bomb->GetPositionY());
-			auto blockCenter = Helpers::GetBlockCenter(currentBlock.first, currentBlock.second);
+			auto currentBlock = Map::GetBlockIndicesFromCoords(bomb->GetPositionX(), bomb->GetPositionY());
+			auto blockCenter = Map::GetBlockCenterFromIndices(currentBlock.first, currentBlock.second);
 			SpawnFlames(blockCenter.first, blockCenter.second, bomb->GetFlamePower());
 		}
 	}
@@ -457,7 +457,7 @@ bool GameState::CanSpawnFlame(const int x, const int y)
 
 void GameState::SpawnFlames(int p_x, int p_y, int p_flamePower)
 {
-	const auto indexes = Helpers::GetCurrentBlock(p_x, p_y);
+	const auto indexes = Map::GetBlockIndicesFromCoords(p_x, p_y);
 	const int index_x = indexes.first;
 	const int index_y = indexes.second;
 	int pos_x = 0;

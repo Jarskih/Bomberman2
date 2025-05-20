@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Map.h"
+#include "Config.h" // Ensure Config.h is included
 #include <fstream>
 #include <iostream>
 #include "State.h"
@@ -142,7 +143,7 @@ const char* Map::GetSpritePath(const int blockType)
 // Get block object from coordinates
 sp<Block> Map::findBlockByCoordinates(const int x, const int y)
 {
-	const auto block = Helpers::GetCurrentBlock(x, y);
+	const auto block = Map::GetBlockIndicesFromCoords(x, y); // Changed this line
 	return findBlockByIndex(block.first, block.second);
 }
 
@@ -160,4 +161,42 @@ sp<Block> Map::findBlockByIndex(const int x, const int y)
 std::list<Block*> Map::requestPath(Block &start, Block &end) const
 {
 	return pathfinder->calculatePath(start, end);
+}
+
+// Get block center coordinates from indexes
+std::pair<int, int> Map::GetBlockCenterFromIndices(int index_x, int index_y)
+{
+    const int x = index_x * Config::BLOCK_WIDTH; // + BLOCK_OFFSET_X;
+    const int y = index_y * Config::BLOCK_HEIGHT; // + BLOCK_OFFSET_Y;
+
+    std::pair<int, int> blockCenter;
+    blockCenter.first = x;
+    blockCenter.second = y;
+    return blockCenter;
+}
+
+std::pair<int, int> Map::GetBlockIndicesFromCoords(float x, float y)
+{
+    return GetBlockIndicesFromCoords(static_cast<int>(x), static_cast<int>(y));
+}
+
+// Get block index from coordinates
+std::pair<int, int> Map::GetBlockIndicesFromCoords(int x, int y)
+{
+    if (x <= 0)
+    {
+        x = 1;
+    }
+
+    if (y <= 0)
+    {
+        y = 1;
+    }
+    const int index_x = static_cast<int>(x / Config::BLOCK_WIDTH);
+    const int index_y = static_cast<int>(y / Config::BLOCK_HEIGHT);
+
+    std::pair<int, int> blockIndexes;
+    blockIndexes.first = index_x;
+    blockIndexes.second = index_y;
+    return blockIndexes;
 }
