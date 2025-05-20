@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <SDL.h>
+#include <utility> // Required for std::pair
 #include "Helpers.h"
 #include "EasyEnemy.h"
 #include "Block.h"
@@ -19,6 +20,11 @@ public:
 	~Map();
 	void Update();
 	void Render(SDL_Renderer* p_renderer);
+
+	// Static methods for coordinate and index conversions
+	static std::pair<int, int> GetBlockCenterFromIndices(int index_x, int index_y);
+	static std::pair<int, int> GetBlockIndicesFromCoords(int x, int y);
+	static std::pair<int, int> GetBlockIndicesFromCoords(float x, float y);
 
 	sp<Block> findBlockByCoordinates(int x, int y);
 	sp<Block> findBlockByIndex(int x, int y);
